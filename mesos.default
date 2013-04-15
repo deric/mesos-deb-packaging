@@ -3,3 +3,6 @@
 RUN_MESOS_SLAVE=no
 RUN_MESOS_MASTER=no
 
+MESOS_MASTER_PID="/var/run/mesos.pid"
+MESOS_SLAVE_PID="/var/run/mesos.pid"
+

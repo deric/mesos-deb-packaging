@@ -59,12 +59,13 @@ echo "building deb package ..."
 #create directory structure
 mkdir -p ${mesos_root_dir}
 mkdir -p etc/default
-mkdir -p etc/${name}
+mkdir -p etc/${name}/conf
 
 cp ${origdir}/mesos.default etc/default/mesos
 if [ $dist == "debian" ]; then
   mkdir -p etc/init.d
-  
+  cp ${origdir}/mesos.mesos-master.init etc/init.d/mesos-master
+  cp ${origdir}/mesos.mesos-slave.init etc/init.d/mesos-slave
 else
   mkdir -p etc/init
   cp ${origdir}/mesos.mesos-master.upstart etc/init/mesos-master

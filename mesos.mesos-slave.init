@@ -1,0 +1,61 @@
+#! /bin/sh
+ 
+### BEGIN INIT INFO
+# Provides:          mesos-slave
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts the mesos slave
+# Description:       The Mesos master distributes computing tasks to Mesos slaves
+### END INIT INFO
+ 
+NAME="mesos-slave"
+DESC="mesos slave"
+
+# Include storm defaults if available
+if [ -f /etc/default/mesos ] ; then
+    . /etc/default/mesos
+fi
+
+set -e
+ 
+. /lib/lsb/init-functions
+
+PID=${MESOS_SLAVE_PID}
+MESOS_CMD=/usr/sbin/mesos-slave
+ 
+case "$1" in
+  start)
+
+    echo -n "Starting $DESC: "
+    start-stop-daemon --start --background --quiet --pidfile ${PID} --make-pidfile \
+        --exec ${MESOS_CMD} || true
+    echo "$NAME."
+    ;;
+  stop)
+    echo -n "Stopping $DESC: "
+    start-stop-daemon --stop --quiet --pidfile ${PID} \
+        --exec ${MESOS_CMD} || true
+    echo "$NAME."
+    ;;
+  restart)
+    echo -n "Restarting $DESC: "
+    start-stop-daemon --stop --quiet --pidfile ${PID} \
+        --exec ${MESOS_CMD} || true
+    sleep 1
+    start-stop-daemon --start --background --quiet --pidfile ${PID} --make-pidfile \
+        --exec ${MESOS_CMD} || true
+    echo "$NAME."
+    ;;
+  status)
+      status_of_proc -p ${PID} $MESOS_CMD $NAME && exit 0 || exit $?
+      ;;
+  *)
+    N=/etc/init.d/$NAME
+    echo "Usage: $N {start|stop|restart|status}" >&2
+    exit 1
+    ;;
+esac
+ 
+exit 0
