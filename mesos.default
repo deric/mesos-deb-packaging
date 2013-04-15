@@ -3,6 +3,9 @@
 RUN_MESOS_SLAVE=no
 RUN_MESOS_MASTER=no
 
-MESOS_MASTER_PID="/var/run/mesos.pid"
-MESOS_SLAVE_PID="/var/run/mesos.pid"
+MESOS_MASTER_PID="/var/run/mesos_master.pid"
+MESOS_SLAVE_PID="/var/run/mesos_slave.pid"
+
+MESOS_MASTER_PORT=5050
+MESOS_MASTER_LOG="/var/log/mesos/master.log"
 
