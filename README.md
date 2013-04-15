@@ -12,6 +12,7 @@ Build scripts to create a Debian package with FPM
   * make
   * g++
   * java
+  * lxc
 
 in commands: 
 

@@ -83,7 +83,7 @@ fpm -t deb \
     --vendor "" \
     -m "$MAINTAINER" \
    --prefix=/ \
-    -d "default-jre-headless | java6-runtime-headless" \
+    -d "default-jre-headless | java6-runtime-headless" -d "lxc" \
     -s dir \
     -- .
 mv ${name}*.deb ${origdir}
