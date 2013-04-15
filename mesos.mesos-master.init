@@ -23,7 +23,7 @@ set -e
 . /lib/lsb/init-functions
 
 PID=${MESOS_MASTER_PID}
-MESOS_CMD="/usr/local/sbin/mesos-master -- --log_dir=${MESOS_MASTER_LOG} --port=${MESOS_UI_PORT}"
+MESOS_CMD="/usr/local/sbin/mesos-master -- --log_dir=${MESOS_MASTER_LOG} --port=${MESOS_UI_PORT} --conf=${MESOS_CONF}"
  
 case "$1" in
   start)

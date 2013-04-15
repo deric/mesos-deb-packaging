@@ -8,4 +8,5 @@ MESOS_SLAVE_PID="/var/run/mesos_slave.pid"
 
 MESOS_UI_PORT=5050
 MESOS_MASTER_LOG="/var/log/mesos/master.log"
+MESOS_CONF="/etc/mesos/conf"
 
