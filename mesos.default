@@ -1,0 +1,5 @@
+# /etc/default/mesos
+
+RUN_MESOS_SLAVE=no
+RUN_MESOS_MASTER=no
+
