@@ -60,6 +60,7 @@ echo "building deb package ..."
 mkdir -p ${mesos_root_dir}
 mkdir -p etc/default
 mkdir -p etc/${name}/conf
+mkdir -p usr/local/var/mesos/deploy
 
 cp ${origdir}/mesos.default etc/default/mesos
 if [ $dist == "debian" ]; then
