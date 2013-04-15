@@ -20,6 +20,6 @@ pre-start script
 end script
 
 script
-  exec /usr/sbin/mesos-master --conf=/etc/mesos/conf
+  exec /usr/local/sbin/mesos-master --conf=/etc/mesos/conf
 end script
 
