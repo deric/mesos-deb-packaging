@@ -30,7 +30,7 @@ case "$1" in
 
     echo -n "Starting $DESC: "
     start-stop-daemon --start --background --quiet --pidfile ${PID} --make-pidfile \
-        --exec ${MESOS_CMD} --log_dir=${MESOS_MASTER_LOG} --port=${MESOS_MASTER_PORT} || true
+        --exec ${MESOS_CMD} --log_dir=${MESOS_MASTER_LOG} --port=${MESOS_UI_PORT} || true
     echo "$NAME."
     ;;
   stop)
@@ -45,7 +45,7 @@ case "$1" in
         --exec ${MESOS_CMD} || true
     sleep 1
     start-stop-daemon --start --background --quiet --pidfile ${PID} --make-pidfile \
-        --exec ${MESOS_CMD} --log_dir=${MESOS_MASTER_LOG} --port=${MESOS_MASTER_PORT} || true
+        --exec ${MESOS_CMD} --log_dir=${MESOS_MASTER_LOG} --port=${MESOS_UI_PORT} || true
     echo "$NAME."
     ;;
   status)
