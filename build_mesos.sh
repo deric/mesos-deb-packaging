@@ -59,7 +59,11 @@ echo "building deb package ..."
 #create directory structure
 mkdir -p ${mesos_root_dir}
 mkdir -p etc/default
-mkdir -p etc/${name}/conf
+mkdir -p etc/${name}
+#if [ ! -f etc/${name}/conf ]; then
+#  ln -s usr/local/var/mesos/conf etc/${name}/conf
+#fi
+
 mkdir -p usr/local/var/mesos/deploy
 
 cp ${origdir}/mesos.default etc/default/mesos
@@ -86,7 +90,7 @@ fpm -t deb \
     --vendor "" \
     -m "$MAINTAINER" \
    --prefix=/ \
-    -d "default-jre-headless | java6-runtime-headless" -d "lxc" \
+    -d "default-jre-headless | java6-runtime-headless" -d "lxc" -d "python >= 2.6" -d "libcurl3" \
     -s dir \
     -- .
 mv ${name}*.deb ${origdir}

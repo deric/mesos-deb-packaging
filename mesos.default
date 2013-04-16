@@ -6,7 +6,10 @@ RUN_MESOS_MASTER=no
 MESOS_MASTER_PID="/var/run/mesos_master.pid"
 MESOS_SLAVE_PID="/var/run/mesos_slave.pid"
 
-MESOS_UI_PORT=5050
-MESOS_MASTER_LOG="/var/log/mesos/master.log"
+MASTER_PORT=5050
+MASTER_IP=localhost
+LOG_DIR="/var/log/mesos"
 MESOS_CONF="/etc/mesos/conf"
+
+CLUSTER=""
 
