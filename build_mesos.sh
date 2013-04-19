@@ -1,4 +1,13 @@
 #!/bin/bash
+#
+# Usage: clean build (will compile all files)
+#
+#     $ ./build_mesos.sh clean
+#
+#  or $ ./build_mesos.sh 
+#
+#  will use current libmesos-${version}.so, if exists
+#
 set -e
 set -u
 name=mesos
@@ -15,6 +24,14 @@ origdir="$(pwd)"
 mesos_root_dir=usr/lib/${name}
 #use old debian init.d scripts or ubuntu upstart
 dist="debian"
+
+CLEAN="false"
+if [ $# -ge 1 ]; then
+  if [ $1 == "clean" ]; then
+	echo "got clear arg"
+    CLEAN="true"
+  fi
+fi
 
 # add e.g. to ~/.bash_profile 'export MAINTAINER="your@email.com"'
 # if variable not set, use default value
@@ -34,11 +51,18 @@ else
   git pull 
 fi
 
+
+#TODO: add param for cleaning build dir
+if [ ${CLEAN} == "true" ]; then
+  echo "cleaning previous build"
+  rm -rf build
+  mkdir build
+fi
+
 if [ ! -f "configure" ]; then
   autoreconf -f -i -Wall,no-obsolete
 fi
 
-#TODO: add param for cleaning build dir
 cd build
 if [ ! -f "deb/usr/local/lib/libmesos-${version}.so" ]; then
   ../configure
