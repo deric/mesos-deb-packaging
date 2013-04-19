@@ -66,7 +66,9 @@ mkdir -p etc/${name}
 
 mkdir -p usr/local/var/mesos/deploy
 
-cp ${origdir}/mesos.default etc/default/mesos
+cp ${origdir}/default/mesos etc/default/mesos
+cp ${origdir}/default/master etc/default/mesos-master
+cp ${origdir}/default/slave etc/default/mesos-slave
 if [ $dist == "debian" ]; then
   mkdir -p etc/init.d
   # preserve executable flag
