@@ -60,12 +60,10 @@ echo "building deb package ..."
 mkdir -p ${mesos_root_dir}
 mkdir -p etc/default
 mkdir -p etc/${name}
-#if [ ! -f etc/${name}/conf ]; then
-#  ln -s usr/local/var/mesos/conf etc/${name}/conf
-#fi
 
 mkdir -p usr/local/var/mesos/deploy
 
+cp ${origdir}/conf etc/mesos/mesos.conf
 cp ${origdir}/default/mesos etc/default/mesos
 cp ${origdir}/default/master etc/default/mesos-master
 cp ${origdir}/default/slave etc/default/mesos-slave

@@ -18,6 +18,11 @@ if [ -f /etc/default/mesos ] ; then
     . /etc/default/mesos
 fi
 
+if [ -f /etc/default/mesos-slave ] ; then
+    . /etc/default/mesos-slave
+fi
+
+
 set -e
  
 . /lib/lsb/init-functions

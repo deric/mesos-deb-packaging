@@ -18,6 +18,11 @@ if [ -f /etc/default/mesos ] ; then
     . /etc/default/mesos
 fi
 
+if [ -f /etc/default/mesos-master ] ; then
+    . /etc/default/mesos-master
+fi
+
+
 set -e
  
 . /lib/lsb/init-functions
