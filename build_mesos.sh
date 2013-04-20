@@ -19,7 +19,7 @@ description="Apache Mesos is a cluster manager that provides efficient resource 
 url="http://incubator.apache.org/mesos/"
 arch="amd64"
 section="misc"
-package_version="-1"
+package_version=""
 origdir="$(pwd)"
 mesos_root_dir=usr/lib/${name}
 #use old debian init.d scripts or ubuntu upstart
@@ -52,8 +52,6 @@ else
   git --no-pager log --pretty=format:"%h%x09%an%x09%ad%x09%s" --decorate --graph > CHANGELOG 
 fi
 
-
-#TODO: add param for cleaning build dir
 if [ ${CLEAN} == "true" ]; then
   echo "cleaning previous build"
   rm -rf build
@@ -118,8 +116,10 @@ fpm -t deb \
     --category ${section} \
     --vendor "" \
     -m "$MAINTAINER" \
-   --prefix=/ \
-    -d "default-jre-headless | java6-runtime-headless" -d "lxc" -d "python >= 2.6" -d "libcurl3" \
+    --prefix=/ \
+    --deb-recommends "default-jre-headless | java6-runtime-headless" \
+    --deb-recommends "lxc" --deb-recommends "python >= 2.6" \
+    -d "libcurl3" \
     -s dir \
     -- .
 mv ${name}*.deb ${origdir}
