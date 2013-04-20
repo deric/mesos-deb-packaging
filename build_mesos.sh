@@ -19,7 +19,7 @@ description="Apache Mesos is a cluster manager that provides efficient resource 
 url="http://incubator.apache.org/mesos/"
 arch="amd64"
 section="misc"
-package_version=""
+package_version="-1"
 origdir="$(pwd)"
 mesos_root_dir=usr/lib/${name}
 #use old debian init.d scripts or ubuntu upstart
@@ -48,7 +48,8 @@ if [ ! -d ${name}/.git ]; then
   cd ${name}
 else
   cd ${name}
-  git pull 
+  git pull
+  git --no-pager log --pretty=format:"%h%x09%an%x09%ad%x09%s" --decorate --graph > CHANGELOG 
 fi
 
 
@@ -81,12 +82,16 @@ echo "entering package root `pwd`"
 echo "building deb package ..."
 
 #create directory structure
-mkdir -p ${mesos_root_dir}
+mkdir -p ${mesos_root_dir}/doc
 mkdir -p etc/default
 mkdir -p etc/${name}
 
 mkdir -p usr/local/var/mesos/deploy
 
+#copy git changelog
+cp ../../CHANGELOG ${mesos_root_dir}/doc
+
+#copy config files
 cp ${origdir}/conf etc/mesos/mesos.conf
 cp ${origdir}/default/mesos etc/default/mesos
 cp ${origdir}/default/master etc/default/mesos-master
