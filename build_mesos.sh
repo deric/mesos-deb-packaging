@@ -97,12 +97,12 @@ cp ${origdir}/default/slave etc/default/mesos-slave
 if [ $dist == "debian" ]; then
   mkdir -p etc/init.d
   # preserve executable flag
-  cp -p ${origdir}/mesos.mesos-master.init etc/init.d/mesos-master
-  cp -p ${origdir}/mesos.mesos-slave.init etc/init.d/mesos-slave
+  cp -p ${origdir}/init.d/master.init etc/init.d/mesos-master
+  cp -p ${origdir}/init.d/slave.init etc/init.d/mesos-slave
 else
   mkdir -p etc/init
-  cp ${origdir}/mesos.mesos-master.upstart etc/init/mesos-master
-  cp ${origdir}/mesos.mesos-slave.upstart etc/init/mesos-slave
+  cp ${origdir}/init/master.upstart etc/init/mesos-master
+  cp ${origdir}/init/slave.upstart etc/init/mesos-slave
 fi
 mkdir -p var/log/${name}
 

@@ -1,5 +1,6 @@
-# mesos slave upstart
-description "Mesos Slave"
+# mesos master upstart
+
+description "Mesos Master"
 
 env DEFAULTFILE=/etc/default/mesos
 
@@ -7,7 +8,7 @@ start on runlevel [2345]
 respawn
 
 pre-start script
-  RUN_MESOS_SLAVE=no
+  RUN_MESOS_MASTER=no
   if [ -f "$DEFAULTFILE" ]; then
     . "$DEFAULTFILE"
   fi
@@ -19,7 +20,6 @@ pre-start script
 end script
 
 script
-  exec /usr/local/sbin/mesos-slave --conf=/etc/mesos/conf
+  exec /usr/local/sbin/mesos-master --conf=$MESOS_CONF
 end script
-
 

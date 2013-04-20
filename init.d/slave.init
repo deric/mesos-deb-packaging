@@ -54,7 +54,7 @@ case "$1" in
     echo "$NAME."
     ;;
   status)
-      status_of_proc -p ${PID} $MESOS_CMD $NAME && exit 0 || exit $?
+      status_of_proc -p ${PID} $NAME $NAME && exit 0 || exit $?
       ;;
   *)
     N=/etc/init.d/$NAME
