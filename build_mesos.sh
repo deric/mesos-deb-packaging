@@ -19,7 +19,7 @@ description="Apache Mesos is a cluster manager that provides efficient resource 
 url="http://incubator.apache.org/mesos/"
 arch="amd64"
 section="misc"
-package_version=""
+package_version="~5"
 with_java=true
 origdir="$(pwd)"
 mesos_root_dir=usr/lib/${name}
@@ -66,7 +66,7 @@ fi
 cd build
 if [ ! -f "deb/usr/local/lib/libmesos-${version}.so" ]; then
   if $with_java ; then
-    ../configure JAVA_HOME=${JAVA_HOME}
+    ../configure --with-java-home JAVA_HOME=${JAVA_HOME}
   else
     ../configure
   fi
@@ -112,6 +112,11 @@ else
   cp ${origdir}/init/slave.upstart etc/init/mesos-slave
 fi
 mkdir -p var/log/${name}
+# move mesos.jar to deb package folder
+if $with_java ; then
+  jar_file="mesos-${version}.jar"
+  mv ../src/${jar_file} usr/local/var/mesos  
+fi
 
 #_ MAKE DEBIAN _#
 fpm -t deb \
@@ -127,7 +132,6 @@ fpm -t deb \
     --deb-recommends "default-jre-headless | java6-runtime-headless" \
     --deb-recommends "lxc" --deb-recommends "python >= 2.6" \
     -d "libcurl3" \
-    --after-install "/sbin/ldconfig" \
     -s dir \
     -- .
 mv ${name}*.deb ${origdir}
