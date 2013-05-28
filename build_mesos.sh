@@ -19,7 +19,7 @@ description="Apache Mesos is a cluster manager that provides efficient resource 
 url="http://incubator.apache.org/mesos/"
 arch="amd64"
 section="misc"
-package_version="~5"
+package_version=""
 with_java=true
 origdir="$(pwd)"
 mesos_root_dir=usr/lib/${name}
@@ -60,7 +60,8 @@ if [ ${CLEAN} == "true" ]; then
 fi
 
 if [ ! -f "configure" ]; then
-  autoreconf -f -i -Wall,no-obsolete
+  #autoreconf -f -i -Wall,no-obsolete
+  ./bootstrap
 fi
 
 cd build
