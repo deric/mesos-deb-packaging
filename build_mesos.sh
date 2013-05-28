@@ -20,6 +20,7 @@ url="http://incubator.apache.org/mesos/"
 arch="amd64"
 section="misc"
 package_version=""
+with_java=true
 origdir="$(pwd)"
 mesos_root_dir=usr/lib/${name}
 #use old debian init.d scripts or ubuntu upstart
@@ -64,9 +65,15 @@ fi
 
 cd build
 if [ ! -f "deb/usr/local/lib/libmesos-${version}.so" ]; then
-  ../configure
+  if $with_java ; then
+    ../configure JAVA_HOME=${JAVA_HOME}
+  else
+    ../configure
+  fi
   make
-  mkdir deb
+  if [ ! -d "deb" ]; then
+    mkdir deb
+  fi
   make install DESTDIR=`pwd`/deb
 fi
 
@@ -120,6 +127,7 @@ fpm -t deb \
     --deb-recommends "default-jre-headless | java6-runtime-headless" \
     --deb-recommends "lxc" --deb-recommends "python >= 2.6" \
     -d "libcurl3" \
+    --after-install "/sbin/ldconfig" \
     -s dir \
     -- .
 mv ${name}*.deb ${origdir}
