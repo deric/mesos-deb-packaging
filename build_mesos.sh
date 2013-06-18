@@ -36,7 +36,8 @@ fi
 
 # add e.g. to ~/.bash_profile 'export MAINTAINER="your@email.com"'
 # if variable not set, use default value
-if [[ -z "$MAINTAINER" ]]; then
+if [[ -z ${MAINTAINER+xxx} || "${MAINTAINER+xxx}" = "xxx" ]]; then
+  #variable is not set at all or it's empty
   MAINTAINER="${USER}@localhost"
 fi
 
