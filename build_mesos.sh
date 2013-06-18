@@ -41,11 +41,12 @@ if [[ -z "$MAINTAINER" ]]; then
 fi
 
 #_ MAIN _#
+echo "removing ${name}*.deb"
 rm -rf ${name}*.deb
 mkdir -p tmp && pushd tmp
 if [ ! -d ${name}/.git ]; then
   rm -rf ${name}
-  git clone git://github.com/apache/mesos.git
+  git clone git://github.com/apache/incubator-mesos.git
   cd ${name}
 else
   cd ${name}
@@ -132,7 +133,7 @@ fpm -t deb \
     --prefix=/ \
     --deb-recommends "default-jre-headless | java6-runtime-headless" \
     --deb-recommends "lxc" --deb-recommends "python >= 2.6" \
-    -d "libcurl3" \
+    -d "libcurl3" -d "libssl-dev = 0.9.8" \
     -s dir \
     -- .
 mv ${name}*.deb ${origdir}
