@@ -19,4 +19,13 @@ in commands:
        gem install fpm
        apt-get install python-dev autoconf automake git make
 
+define in e.g. `~/.bash_profile` a `MAINTAINER` variable
+
+	export MAINTAINER="email@example.com"
+
+## Building package
+
+	./build_mesos.sh
+
+
 
