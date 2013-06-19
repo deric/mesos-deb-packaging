@@ -10,6 +10,7 @@
 #
 set -e
 set -u
+
 name=mesos
 version=0.14.0
 description="Apache Mesos is a cluster manager that provides efficient resource isolation
@@ -24,11 +25,30 @@ with_java=true
 origdir="$(pwd)"
 mesos_root_dir=usr/lib/${name}
 #use old debian init.d scripts or ubuntu upstart
-dist="debian"
+
+EXPECTED_ARGS=1
+E_BADARGS=65
+
+if [ $# -lt $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` {codename}"
+  exit ${E_BADARGS};
+fi
+
+CODENAME=$1
+
+if [[ "${CODENAME}" == "squeeze" ]]; then
+  LIBSSL="libssl0.9.8"
+  dist="debian"
+else
+  #should work for wheezy
+  LIBSSL="libssl1.0.0"
+  dist="debian"
+fi
 
 CLEAN="false"
-if [ $# -ge 1 ]; then
-  if [ $1 == "clean" ]; then
+if [ $# -gt 1 ]; then
+  if [ $2 == "clean" ]; then
 	echo "got clear arg"
     CLEAN="true"
   fi
@@ -142,7 +162,7 @@ fi
 #_ MAKE DEBIAN _#
 fpm -t deb \
     -n ${name} \
-    -v ${version}${package_version} \
+    -v "${version}~${CODENAME}${package_version}" \
     --description "${description}" \
     --url="${url}" \
     -a ${arch} \
@@ -152,7 +172,7 @@ fpm -t deb \
     --prefix=/ \
     --deb-recommends "default-jre-headless | java6-runtime-headless" \
     --deb-recommends "lxc" --deb-recommends "python >= 2.6" \
-    -d "libcurl3" -d "libssl-dev = 0.9.8" \
+    -d "libcurl3" -d "${LIBSSL}" \
     -s dir \
     -- .
 mv ${name}*.deb ${origdir}
