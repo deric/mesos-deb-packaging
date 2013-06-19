@@ -40,6 +40,23 @@ if [[ -z "$MAINTAINER" ]]; then
   MAINTAINER="${USER}@localhost"
 fi
 
+#check dependencies
+DEPENDENCIES=(python-dev autoconf automake git make libssl-dev libcurl3)
+i=0
+expstatus="Status: install ok installed"
+for package in ${DEPENDENCIES[@]}
+do
+   status=`dpkg -s ${package} | grep Status:`
+   if [[ "${status}" != *"${expstatus}"* ]]; then
+     echo "missing package: ${package}"
+     i=$((i+1))
+   fi
+done
+if [[ i -gt 0 ]]; then
+  echo "please install missing dependencies"
+  exit 1
+fi
+
 #_ MAIN _#
 echo "removing ${name}*.deb"
 rm -rf ${name}*.deb

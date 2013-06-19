@@ -17,7 +17,7 @@ Build scripts to create a Debian package with FPM
 in commands: 
 
        gem install fpm
-       apt-get install python-dev autoconf automake git make
+       sudo apt-get install python-dev autoconf automake git make libssl-dev libcurl3
 
 define in e.g. `~/.bash_profile` a `MAINTAINER` variable
 
@@ -26,6 +26,4 @@ define in e.g. `~/.bash_profile` a `MAINTAINER` variable
 ## Building package
 
 	./build_mesos.sh
-
-
 
