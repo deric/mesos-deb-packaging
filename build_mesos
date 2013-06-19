@@ -1,10 +1,10 @@
 #!/bin/bash
 #
-# Usage: clean build (will compile all files)
+# Usage: {codename of target distro} clean build (will compile all files)
 #
-#     $ ./build_mesos.sh clean
+#     $ ./build_mesos wheezy clean
 #
-#  or $ ./build_mesos.sh 
+#  or $ ./build_mesos wheezy
 #
 #  will use current libmesos-${version}.so, if exists
 #
@@ -153,10 +153,12 @@ else
   cp ${origdir}/init/slave.upstart etc/init/mesos-slave
 fi
 mkdir -p var/log/${name}
-# move mesos.jar to deb package folder
-if $with_java ; then
-  jar_file="mesos-${version}.jar"
-  mv ../src/${jar_file} usr/local/var/mesos  
+if [ ${CLEAN} == "true" ]; then
+  # move mesos.jar to deb package folder
+  if $with_java ; then
+    jar_file="mesos-${version}.jar"
+    mv ../src/${jar_file} usr/local/var/mesos  
+  fi
 fi
 
 #_ MAKE DEBIAN _#
@@ -173,6 +175,8 @@ fpm -t deb \
     --deb-recommends "default-jre-headless | java6-runtime-headless" \
     --deb-recommends "lxc" --deb-recommends "python >= 2.6" \
     -d "libcurl3" -d "${LIBSSL}" \
+    --after-install "${origdir}/debian/mesos.postinst" \
+    --after-remove "${origdir}/debian/mesos.postrm" \
     -s dir \
     -- .
 mv ${name}*.deb ${origdir}
