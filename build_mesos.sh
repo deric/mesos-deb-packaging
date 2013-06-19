@@ -11,7 +11,7 @@
 set -e
 set -u
 name=mesos
-version=0.13.0
+version=0.14.0
 description="Apache Mesos is a cluster manager that provides efficient resource isolation
  and sharing across distributed applications, or frameworks. It can run Hadoop,
  MPI, Hypertable, Spark (a new framework for low-latency interactive and
@@ -36,7 +36,8 @@ fi
 
 # add e.g. to ~/.bash_profile 'export MAINTAINER="your@email.com"'
 # if variable not set, use default value
-if [[ -z "$MAINTAINER" ]]; then
+if [[ -z ${MAINTAINER+xxx} || "${MAINTAINER+xxx}" = "xxx" ]]; then
+  #variable is not set at all or it's empty
   MAINTAINER="${USER}@localhost"
 fi
 
@@ -61,12 +62,13 @@ fi
 echo "removing ${name}*.deb"
 rm -rf ${name}*.deb
 mkdir -p tmp && pushd tmp
-if [ ! -d ${name}/.git ]; then
-  rm -rf ${name}
+REPO="incubator-mesos"
+if [ ! -d ${REPO}/.git ]; then
+  rm -rf ${REPO}
   git clone git://github.com/apache/incubator-mesos.git
-  cd ${name}
+  cd ${REPO}
 else
-  cd ${name}
+  cd ${REPO}
   git pull
   git --no-pager log --pretty=format:"%h%x09%an%x09%ad%x09%s" --decorate --graph > CHANGELOG 
 fi
@@ -78,7 +80,7 @@ if [ ${CLEAN} == "true" ]; then
 fi
 
 if [ ! -f "configure" ]; then
-  #autoreconf -f -i -Wall,no-obsolete
+  autoreconf -f -i -Wall,no-obsolete
   ./bootstrap
 fi
 
