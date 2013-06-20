@@ -92,6 +92,8 @@ else
   git pull
   git --no-pager log --pretty=format:"%h%x09%an%x09%ad%x09%s" --decorate --graph > CHANGELOG 
 fi
+#short hash tag for build identification
+LASTCOMMIT=`git rev-parse --short HEAD`
 
 if [ ${CLEAN} == "true" ]; then
   echo "cleaning previous build"
@@ -167,7 +169,7 @@ fi
 #_ MAKE DEBIAN _#
 fpm -t deb \
     -n ${name} \
-    -v "${version}~${CODENAME}${package_version}" \
+    -v "${version}~${CODENAME}-${LASTCOMMIT}${package_version}" \
     --description "${description}" \
     --url="${url}" \
     -a ${arch} \
