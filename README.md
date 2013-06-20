@@ -6,6 +6,9 @@ Mesos is a cluster manager that provides efficient resource isolation and sharin
 
 ## Requirements
 
+  * ruby
+  * prerequisites:
+
        gem install fpm
        sudo apt-get install python-dev autoconf automake git make libssl-dev libcurl3
 
