@@ -96,6 +96,9 @@ fi
 if [ ${CLEAN} == "true" ]; then
   echo "cleaning previous build"
   rm -rf build
+fi
+
+if [[ ! -d build ]]; then
   mkdir build
 fi
 
@@ -145,8 +148,8 @@ cp ${origdir}/default/slave etc/default/mesos-slave
 if [ $dist == "debian" ]; then
   mkdir -p etc/init.d
   # preserve executable flag
-  cp -p ${origdir}/init.d/master.init etc/init.d/mesos-master
-  cp -p ${origdir}/init.d/slave.init etc/init.d/mesos-slave
+  cp -p ${origdir}/debian/master.init etc/init.d/mesos-master
+  cp -p ${origdir}/debian/slave.init etc/init.d/mesos-slave
 else
   mkdir -p etc/init
   cp ${origdir}/init/master.upstart etc/init/mesos-master
