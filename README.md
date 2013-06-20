@@ -17,6 +17,12 @@ define in e.g. `~/.bash_profile` a `MAINTAINER` variable
 
 	./build_mesos wheezy
 
+## TODO
+
+   * automatic restart of master/slave when upgrading
+   * logrotate support
+   * service autostart
+
 ## Authors
 
    * Tomas Barton
