@@ -33,6 +33,7 @@ MESOS_CMD="/usr/local/sbin/mesos-master -- --log_dir=${LOG_DIR} --port=${MASTER_
  
 case "$1" in
   start)
+    ulimit -n 8192
 
     echo -n "Starting $DESC: "
     start-stop-daemon --start --background --quiet --pidfile ${PID} --make-pidfile \

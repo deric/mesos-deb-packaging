@@ -32,6 +32,7 @@ MESOS_CMD="/usr/local/sbin/mesos-slave -- --master=${MASTER_IP}:${MASTER_PORT} -
  
 case "$1" in
   start)
+    ulimit -n 8192
 
     echo -n "Starting $DESC: "
     start-stop-daemon --start --background --quiet --pidfile ${PID} --make-pidfile \
