@@ -18,7 +18,8 @@ description="Apache Mesos is a cluster manager that provides efficient resource 
  MPI, Hypertable, Spark (a new framework for low-latency interactive and
  iterative jobs), and other applications."
 url="http://incubator.apache.org/mesos/"
-arch="amd64"
+DEB_BUILD_ARCH=`dpkg-architecture -qDEB_BUILD_ARCH`
+arch="${DEB_BUILD_ARCH}"
 section="misc"
 package_version=""
 with_java=true
