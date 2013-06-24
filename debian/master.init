@@ -10,10 +10,6 @@
 # Description:       The Mesos master distributes computing tasks to Mesos slaves
 ### END INIT INFO
  
-NAME="mesos-master"
-DESC="mesos master"
-DAEMON="/usr/local/sbin/mesos-master"
-
 # Include storm defaults if available
 if [ -f /etc/default/mesos ] ; then
     . /etc/default/mesos
@@ -23,42 +19,54 @@ if [ -f /etc/default/mesos-master ] ; then
     . /etc/default/mesos-master
 fi
 
-test -x $DAEMON || exit 0
-
 set -e
  
 . /lib/lsb/init-functions
 
+NAME="mesos-master"
+DESC="mesos master"
+DAEMON="/usr/local/sbin/mesos-master"
+DAEMON_OPTS="--port=${MASTER_PORT} --cluster='${CLUSTER}'"
+
 PID=${MESOS_MASTER_PID}
-MESOS_CMD="${DAEMON} -- --log_dir=${LOG_DIR} --port=${MASTER_PORT} \
-	   --cluster=${CLUSTER}"
- 
-case "$1" in
-  start)    
+
+test -x $DAEMON || exit 0
+
+
+start() {
     if [ -n "$ULIMIT" ]; then
-	# Set the ulimits
-	ulimit $ULIMIT
+        # Set the ulimits
+        ulimit $ULIMIT
     fi
 
-    echo -n "Starting $DESC: "
-    start-stop-daemon --start --background --quiet --pidfile ${PID} --make-pidfile \
-        --exec ${MESOS_CMD} || true
-    echo "$NAME."
+    start-stop-daemon --start --quiet --make-pidfile --pidfile $PID \
+      --retry 5 --oknodo --background \
+      --exec /bin/bash -- -c "$DAEMON $DAEMON_OPTS > $LOGFILE 2>&1"
+}
+
+stop() {
+    start-stop-daemon --stop --quiet --pidfile $PID \
+      --retry 5 --oknodo --exec $DAEMON
+}
+
+
+case "$1" in
+  start)
+    log_daemon_msg "Starting $DESC" "$NAME"
+    start
+    log_end_msg $?
     ;;
   stop)
-    echo -n "Stopping $DESC: "
-    start-stop-daemon --stop --quiet --pidfile ${PID} \
-        --exec ${MESOS_CMD} || true
-    echo "$NAME."
-    ;;
-  restart)
-    echo -n "Restarting $DESC: "
-    start-stop-daemon --stop --quiet --pidfile ${PID} \
-        --exec ${MESOS_CMD} || true
+    log_daemon_msg "Stopping $DESC" "$NAME"
+    stop
+    log_end_msg $?
+   ;;
+  restart|force-reload)
+    log_daemon_msg "Restarting $DESC" "$NAME"
+    stop
     sleep 1
-    start-stop-daemon --start --background --quiet --pidfile ${PID} --make-pidfile \
-        --exec ${MESOS_CMD} || true
-    echo "$NAME."
+    start
+    log_end_msg $?
     ;;
   status)
       status_of_proc -p ${PID} $NAME $NAME && exit 0 || exit $?

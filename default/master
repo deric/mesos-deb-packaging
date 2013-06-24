@@ -1,12 +1,12 @@
 # /etc/default/mesos-master
 
-#_ START? _#
-ENABLE="yes"
-
 #_ PID FILE _#
 MESOS_MASTER_PID="/var/run/mesos-master.pid"
 
 # Set the ulimit variable if you need defaults to change.
 #  Example: ULIMIT="-n 4096"
 ULIMIT="-n 8192"
+
+# Master's logfile
+LOGFILE="/var/log/mesos/master.log"
 
