@@ -41,7 +41,7 @@ start() {
 
     start-stop-daemon --start --quiet --make-pidfile --pidfile $PID \
       --retry 5 --oknodo --background \
-      --exec /bin/bash -- -c "$DAEMON $DAEMON_OPTS > $LOGFILE 2>&1"
+      --exec /bin/bash -- -c "$DAEMON $DAEMON_OPTS >> $LOGFILE 2>&1"
 }
 
 stop() {
