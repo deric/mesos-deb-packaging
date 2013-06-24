@@ -175,11 +175,11 @@ fpm -t deb \
     --url="${url}" \
     -a ${arch} \
     --category ${section} \
-    --vendor "" \
+    --vendor "Apache Incubator" \
     -m "$MAINTAINER" \
     --prefix=/ \
     --deb-recommends "default-jre-headless | java6-runtime-headless" \
-    --deb-recommends "lxc" --deb-recommends "python >= 2.6" \
+    --deb-recommends "python >= 2.6" \
     -d "libcurl3" -d "${LIBSSL}" \
     --after-install "${origdir}/debian/mesos.postinst" \
     --after-remove "${origdir}/debian/mesos.postrm" \
