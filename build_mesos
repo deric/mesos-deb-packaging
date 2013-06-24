@@ -113,9 +113,9 @@ fi
 cd build
 if [ ! -f "deb/usr/local/lib/libmesos-${version}.so" ]; then
   if $with_java ; then
-    ../configure --with-java-home JAVA_HOME=${JAVA_HOME}
+    ../configure 
   else
-    ../configure
+    ../configure --disable-java
   fi
   make
   if [ ! -d "deb" ]; then
@@ -163,7 +163,7 @@ if [ ${CLEAN} == "true" ]; then
   # move mesos.jar to deb package folder
   if $with_java ; then
     jar_file="mesos-${version}.jar"
-    mv ../src/${jar_file} usr/local/var/mesos  
+    mv ../src/${jar_file} usr/share/java 
   fi
 fi
 
