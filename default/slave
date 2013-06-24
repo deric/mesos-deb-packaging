@@ -6,3 +6,7 @@ ENABLE="yes"
 #_ PID FILE _#
 MESOS_SLAVE_PID="/var/run/mesos-slave.pid"
 
+# Set the ulimit variable if you need defaults to change.
+#  Example: ULIMIT="-n 4096"
+ULIMIT="-n 8192"
+
