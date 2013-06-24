@@ -12,6 +12,7 @@
  
 NAME="mesos-slave"
 DESC="mesos slave"
+DAEMON="/usr/local/sbin/mesos-slave"
 
 # Include storm defaults if available
 if [ -f /etc/default/mesos ] ; then
@@ -22,13 +23,14 @@ if [ -f /etc/default/mesos-slave ] ; then
     . /etc/default/mesos-slave
 fi
 
+test -x $DAEMON || exit 0
 
 set -e
  
 . /lib/lsb/init-functions
 
 PID=${MESOS_SLAVE_PID}
-MESOS_CMD="/usr/local/sbin/mesos-slave -- --master=${MASTER_IP}:${MASTER_PORT} --log_dir=${LOG_DIR}"
+MESOS_CMD="${DAEMON} -- --master=${MASTER_IP}:${MASTER_PORT} --log_dir=${LOG_DIR}"
  
 case "$1" in
   start)

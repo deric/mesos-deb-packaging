@@ -12,6 +12,7 @@
  
 NAME="mesos-master"
 DESC="mesos master"
+DAEMON="/usr/local/sbin/mesos-master"
 
 # Include storm defaults if available
 if [ -f /etc/default/mesos ] ; then
@@ -22,13 +23,14 @@ if [ -f /etc/default/mesos-master ] ; then
     . /etc/default/mesos-master
 fi
 
+test -x $DAEMON || exit 0
 
 set -e
  
 . /lib/lsb/init-functions
 
 PID=${MESOS_MASTER_PID}
-MESOS_CMD="/usr/local/sbin/mesos-master -- --log_dir=${LOG_DIR} --port=${MASTER_PORT} \
+MESOS_CMD="${DAEMON} -- --log_dir=${LOG_DIR} --port=${MASTER_PORT} \
 	   --cluster=${CLUSTER}"
  
 case "$1" in
