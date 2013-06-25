@@ -13,35 +13,47 @@ set -ue
 NAME="mesos-master"
 DESC="mesos master"
 
-[ ! -f /etc/default/mesos ] || . /etc/default/mesos
 . /lib/lsb/init-functions
 
-PID="$MESOS_MASTER_PID"
-MESOS=/usr/local/sbin/mesos-master
+PID=/var/run/mesos-master.pid
+
+go_daemon() {
+  [ ! -f /etc/default/mesos ]        || . /etc/default/mesos
+  [ ! -f /etc/default/mesos-master ] || . /etc/default/mesos-master
+  [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
+  /usr/local/sbin/mesos-master \
+    --zk=file:///etc/mesos/zk --port="$MASTER_PORT" --cluster="${CLUSTER:-}" \
+    >> "$LOGS"/master.log 2>&1
+}
+
+start() {
+  start-stop-daemon --start --background --quiet \
+                    --pidfile "$PID" --make-pidfile --exec "$0" -- go_daemon
+}
+
+stop() {
+  start-stop-daemon --stop --quiet --pidfile "$PID"
+}
 
 case "$1" in
+  go_daemon)
+    go_daemon
+    ;;
   start)
-    ulimit -n 8192
     echo -n "Starting $DESC: "
-    start-stop-daemon --start --background --quiet \
-                      --pidfile "$PID" --make-pidfile \
-                      --exec "$MESOS" -- \
-                      --log_dir="$LOG_DIR" --port="$PORT" --cluster="$CLUSTER"
+    start
     echo "$NAME."
     ;;
   stop)
     echo -n "Stopping $DESC: "
-    start-stop-daemon --stop --quiet --pidfile "$PID"
+    stop
     echo "$NAME."
     ;;
   restart)
     echo -n "Restarting $DESC: "
-    start-stop-daemon --stop --quiet --pidfile "$PID"
+    stop
     sleep 1
-    start-stop-daemon --start --background --quiet \
-                      --pidfile "$PID" --make-pidfile \
-                      --exec "$MESOS" -- \
-                      --log_dir="$LOG_DIR" --port="$PORT" --cluster="$CLUSTER"
+    start
     echo "$NAME."
     ;;
   status)

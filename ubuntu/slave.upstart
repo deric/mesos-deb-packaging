@@ -1,25 +1,13 @@
-# mesos slave upstart
-description "Mesos Slave"
-
-env DEFAULTFILE=/etc/default/mesos
+description "mesos slave"
 
 start on runlevel [2345]
 respawn
 
-pre-start script
-  RUN_MESOS_SLAVE=no
-  if [ -f "$DEFAULTFILE" ]; then
-    . "$DEFAULTFILE"
-  fi
-  if [ "x$RUN_MESOS_MASTER" != xyes ]; then
-    stop
-    exit 0
-  fi
-  ulimit -n 8192
-end script
-
 script
-  exec /usr/local/sbin/mesos-slave --conf=$MESOS_CONF
+  [ ! -f /etc/default/mesos ]       || . /etc/default/mesos
+  [ ! -f /etc/default/mesos-slave ] || . /etc/default/mesos-slave
+  [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
+  exec /usr/local/sbin/mesos-slave --master=file:///etc/mesos/master \
+    >> "$LOGS"/slave.log 2>&1
 end script
-
 

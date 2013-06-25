@@ -5,7 +5,7 @@
 # Required-Stop:     $local_fs $remote_fs $network $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: starts the mesos master
+# Short-Description: starts the mesos slave
 # Description:       The Mesos master slave performs computing tasks
 ### END INIT INFO
 set -ue
@@ -13,35 +13,46 @@ set -ue
 NAME="mesos-slave"
 DESC="mesos slave"
 
-[ ! -f /etc/default/mesos ] || . /etc/default/mesos
 . /lib/lsb/init-functions
 
-PID="$MESOS_SLAVE_PID"
-MESOS=/usr/local/sbin/mesos-slave
+PID=/var/run/mesos-slave.pid
+
+go_daemon() {
+  [ ! -f /etc/default/mesos ]       || . /etc/default/mesos
+  [ ! -f /etc/default/mesos-slave ] || . /etc/default/mesos-slave
+  [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
+  /usr/local/sbin/mesos-slave --master=file:///etc/mesos/master \
+    >> "$LOGS"/slave.log 2>&1
+}
+
+start() {
+  start-stop-daemon --start --background --quiet \
+                    --pidfile "$PID" --make-pidfile --exec "$0" -- go_daemon
+}
+
+stop() {
+  start-stop-daemon --stop --quiet --pidfile "$PID"
+}
 
 case "$1" in
+  go_daemon)
+    go_daemon
+    ;;
   start)
-    ulimit -n 8192
     echo -n "Starting $DESC: "
-    start-stop-daemon --start --background --quiet \
-                      --pidfile "$PID" --make-pidfile \
-                      --exec "$MESOS" -- \
-                      --master="$HOST":"$PORT" --log_dir="$LOG_DIR"
+    start
     echo "$NAME."
     ;;
   stop)
     echo -n "Stopping $DESC: "
-    start-stop-daemon --stop --quiet --pidfile "$PID"
+    stop
     echo "$NAME."
     ;;
   restart)
     echo -n "Restarting $DESC: "
-    start-stop-daemon --stop --quiet --pidfile "$PID"
+    stop
     sleep 1
-    start-stop-daemon --start --background --quiet \
-                      --pidfile "$PID" --make-pidfile \
-                      --exec "$MESOS" -- \
-                      --master="$HOST":"$PORT" --log_dir="$LOG_DIR"
+    start
     echo "$NAME."
     ;;
   status)
