@@ -1,189 +1,162 @@
 #!/bin/bash
-#
-# Usage: {codename of target distro} clean build (will compile all files)
-#
-#     $ ./build_mesos wheezy clean
-#
-#  or $ ./build_mesos wheezy
-#
-#  will use current libmesos-${version}.so, if exists
-#
-set -e
-set -u
+set -o errexit -o nounset -o pipefail
+export LC_ALL=C
+function -h {
+cat <<USAGE
+ USAGE: build_mesos
 
+  In the first form, performs a build in a temporary directory and creates a
+  package.
+
+USAGE
+}; function --help { -h ;}
+
+this="$(cd "$(dirname "$0")" && pwd -P)"
 name=mesos
 version=0.14.0
-description="Apache Mesos is a cluster manager that provides efficient resource isolation
- and sharing across distributed applications, or frameworks. It can run Hadoop,
- MPI, Hypertable, Spark (a new framework for low-latency interactive and
- iterative jobs), and other applications."
-url="http://incubator.apache.org/mesos/"
-DEB_BUILD_ARCH=`dpkg-architecture -qDEB_BUILD_ARCH`
-arch="${DEB_BUILD_ARCH}"
-section="misc"
-package_version=""
-with_java=true
-origdir="$(pwd)"
-mesos_root_dir=usr/lib/${name}
-#use old debian init.d scripts or ubuntu upstart
 
-EXPECTED_ARGS=1
-E_BADARGS=65
+function main {
+  checkout go
+}
 
-if [ $# -lt $EXPECTED_ARGS ]
-then
-  echo "Usage: `basename $0` {codename}"
-  exit ${E_BADARGS};
-fi
+function go {
+  build
+  create_installation
+  pkg
+}
 
-CODENAME=$1
-
-if [[ "${CODENAME}" == "squeeze" ]]; then
-  LIBSSL="libssl0.9.8"
-  dist="debian"
-else
-  #should work for wheezy
-  LIBSSL="libssl1.0.0"
-  dist="debian"
-fi
-
-CLEAN="false"
-if [ $# -gt 1 ]; then
-  if [ $2 == "clean" ]; then
-	echo "got clear arg"
-    CLEAN="true"
+function checkout {
+  if [[ -d incubator-mesos ]]
+  then msg "Dir incubator-mesos exists; skipping checkout."
+  else git clone git://github.com/apache/incubator-mesos.git
   fi
-fi
+  ( cd incubator-mesos && "$@" )
+}
 
-# add e.g. to ~/.bash_profile 'export MAINTAINER="your@email.com"'
-# if variable not set, use default value
-if [[ -z ${MAINTAINER+xxx} && "${MAINTAINER+xxx}" = "xxx" ]]; then
-  #variable is not set at all or it's empty
-  MAINTAINER="${USER}@localhost"
-fi
-
-#check dependencies
-DEPENDENCIES=(python-dev autoconf automake git make libssl-dev libcurl3)
-i=0
-expstatus="Status: install ok installed"
-for package in ${DEPENDENCIES[@]}
-do
-   status=`dpkg -s ${package} | grep Status:`
-   if [[ "${status}" != *"${expstatus}"* ]]; then
-     echo "missing package: ${package}"
-     i=$((i+1))
-   fi
-done
-if [[ i -gt 0 ]]; then
-  echo "please install missing dependencies"
-  exit 1
-fi
-
-#_ MAIN _#
-echo "removing ${name}*.deb"
-rm -rf ${name}*.deb
-mkdir -p tmp && pushd tmp
-REPO="incubator-mesos"
-if [ ! -d ${REPO}/.git ]; then
-  rm -rf ${REPO}
-  git clone git://github.com/apache/incubator-mesos.git
-  cd ${REPO}
-else
-  cd ${REPO}
-  git pull
-  git --no-pager log --pretty=format:"%h%x09%an%x09%ad%x09%s" --decorate --graph > CHANGELOG 
-fi
-#short hash tag for build identification
-LASTCOMMIT=`git rev-parse --short HEAD`
-
-if [ ${CLEAN} == "true" ]; then
-  echo "cleaning previous build"
-  rm -rf build
-fi
-
-if [[ ! -d build ]]; then
-  mkdir build
-fi
-
-if [ ! -f "configure" ]; then
+function build {(
   autoreconf -f -i -Wall,no-obsolete
   ./bootstrap
-fi
-
-cd build
-if [ ! -f "deb/usr/local/lib/libmesos-${version}.so" ]; then
-  if $with_java ; then
-    ../configure --with-java-home JAVA_HOME=${JAVA_HOME}
-  else
-    ../configure
-  fi
+  mkdir -p build
+  cd build
+  ../configure
   make
-  if [ ! -d "deb" ]; then
-    mkdir deb
+)}
+
+function lsb_release_tag {
+  lsb_release --id --release | cut -d: -f2 | tr A-Z a-z | xargs | tr ' ' '/'
+}
+
+function create_installation {(
+  local pwd="$(pwd -P)"
+  mkdir -p deb
+  ( cd build && make install DESTDIR="$pwd"/deb )
+  cd deb
+  mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
+  cp ../CHANGELOG               usr/share/doc/mesos/
+  cp "$this"/default/mesos      etc/default/mesos
+  init_scripts "$linux"
+  jars
+)}
+
+function init_scripts {
+  case "$1" in
+    debian/*) mkdir -p etc/init.d
+              cp -p "$this"/debian/master.init etc/init.d/mesos-master
+              cp -p "$this"/debian/slave.init etc/init.d/mesos-slave ;;
+    ubuntu/*) mkdir -p etc/init
+              cp "$this"/ubuntu/master.upstart etc/init/mesos-master.conf
+              cp "$this"/ubuntu/slave.upstart etc/init/mesos-slave.conf ;;
+    *) err "Not sure how to make init scripts for: $1" ;;
+  esac
+}
+
+function jars {
+  mkdir -p usr/share/java/
+  mv ../build/src/mesos-*.jar usr/share/java/
+}
+
+function pkg {
+  case "$linux" in
+    ubuntu/*|debian/*) deb_ ;;
+    centos/*|redhat/*) rpm_ ;;
+    *)                 err "Not sure how to package for: $linux" ;;
+  esac
+}
+
+function architecture {
+  case "$linux" in
+    ubuntu/*|debian/*) dpkg-architecture -qDEB_BUILD_ARCH ;;
+    centos/*|redhat/*) arch ;;
+    *)                 err "Not sure how to determine arch for: $linux" ;;
+  esac
+}
+
+function find_gem_bin {
+  gem env | sed -n '/^ *- EXECUTABLE DIRECTORY: */ { s/// ; p }'
+}
+
+function deb_ {
+  local version="$version"
+  if git rev-parse --git-dir &>/dev/null
+  then version="$version~$(git log -n1 --format=%h)"
   fi
-  make install DESTDIR=`pwd`/deb
-fi
+  local opts=()
+  opts=( -t deb
+         -n "$name"
+         -v "$version"
+         --description
+"Cluster resouce manager with efficient resource isolation
+ Apache Mesos is a cluster manager that offers efficient resource isolation
+ and sharing across distributed applications, or frameworks. It can run
+ Hadoop, MPI, Hypertable, Spark (a new framework for low-latency interactive
+ and iterative jobs), and other applications."
+         --url=http://incubator.apache.org/mesos/
+         -a "$arch"
+         --category misc
+         --vendor ""
+         -m mesos-dev@incubator.apache.org
+         --prefix=/
+         --deb-recommends "python >= 2.6"
+         --deb-recommends zookeeper
+         --deb-recommends zookeeperd
+         --deb-recommends zookeeper-bin
+         -d libcurl3
+         --after-install "$this/debian/mesos.postinst"
+         --after-remove "$this/debian/mesos.postrm"
+         -s dir )
+  ( cd deb && "$gem_bin"/fpm "${opts[@]}" -p "$this"/pkg.deb -- . )
+}
 
-if [ ! -d "deb" ]; then
-  echo "expected 'deb' dir in `pwd`"
-  exit 1
-fi
+function rpm_ {
+  err "Not implemented."
+}
 
-cd deb
-echo "entering package root `pwd`"
-echo "building deb package ..."
+function upload {
+  local pkg="$name"_"$version"_"$arch".deb
+  local url="$1"/"$linux"/"$pkg"
+  curl -X PUT "$url" --data-binary @"$2" >/dev/null
+  out "$url"
+}
 
-#create directory structure
-mkdir -p ${mesos_root_dir}/doc
-mkdir -p etc/default
-mkdir -p etc/${name}
+function get_system_info {
+  linux="$(lsb_release_tag)"            # <distro>/<version>, like ubuntu/12.10
+  arch="$(architecture)"          # In the format used to label distro packages
+  gem_bin="$(find_gem_bin)"                          # Might not be on the PATH
+}
 
-mkdir -p usr/local/var/mesos/deploy
+function msg { out "$*" >&2 ;}
+function err { local x=$? ; msg "$*" ; return $(( $x == 0 ? 1 : $x )) ;}
+function out { printf '%s\n' "$*" ;}
 
-#copy git changelog
-cp ../../CHANGELOG ${mesos_root_dir}/doc
-
-#copy config files
-cp ${origdir}/conf etc/mesos/mesos.conf
-cp ${origdir}/default/mesos etc/default/mesos
-cp ${origdir}/default/master etc/default/mesos-master
-cp ${origdir}/default/slave etc/default/mesos-slave
-if [ $dist == "debian" ]; then
-  mkdir -p etc/init.d
-  # preserve executable flag
-  cp -p ${origdir}/debian/master.init etc/init.d/mesos-master
-  cp -p ${origdir}/debian/slave.init etc/init.d/mesos-slave
+if [[ ${1:-} ]] && declare -F | cut -d' ' -f3 | fgrep -qx -- "${1:-}"
+then
+  case "$1" in
+    -h|--help) : ;; # Skip system info lookup
+    *)         get_system_info ;;
+  esac
+  "$@"
 else
-  mkdir -p etc/init
-  cp ${origdir}/init/master.upstart etc/init/mesos-master
-  cp ${origdir}/init/slave.upstart etc/init/mesos-slave
-fi
-mkdir -p var/log/${name}
-if [ ${CLEAN} == "true" ]; then
-  # move mesos.jar to deb package folder
-  if $with_java ; then
-    jar_file="mesos-${version}.jar"
-    mv ../src/${jar_file} usr/local/var/mesos  
-  fi
+  get_system_info
+  main "$@"
 fi
 
-#_ MAKE DEBIAN _#
-fpm -t deb \
-    -n ${name} \
-    -v "${version}~${CODENAME}-${LASTCOMMIT}${package_version}" \
-    --description "${description}" \
-    --url="${url}" \
-    -a ${arch} \
-    --category ${section} \
-    --vendor "" \
-    -m "$MAINTAINER" \
-    --prefix=/ \
-    --deb-recommends "default-jre-headless | java6-runtime-headless" \
-    --deb-recommends "lxc" --deb-recommends "python >= 2.6" \
-    -d "libcurl3" -d "${LIBSSL}" \
-    --after-install "${origdir}/debian/mesos.postinst" \
-    --after-remove "${origdir}/debian/mesos.postrm" \
-    -s dir \
-    -- .
-mv ${name}*.deb ${origdir}
-popd

@@ -1,13 +1,13 @@
-# /etc/default/mesos
-
-RUN_MESOS_SLAVE=no
-RUN_MESOS_MASTER=no
-
-
-MASTER_PORT=5050
-MASTER_IP=localhost
+PORT=5050
+HOST=localhost
 LOG_DIR="/var/log/mesos"
 MESOS_CONF="/etc/mesos"
 
 CLUSTER=""
+
+ENABLE="yes"
+
+MESOS_MASTER_PID="/var/run/mesos-master.pid"
+
+MESOS_SLAVE_PID="/var/run/mesos-slave.pid"
 

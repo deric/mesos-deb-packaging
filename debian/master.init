@@ -1,5 +1,4 @@
-#! /bin/sh
- 
+#!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          mesos-master
 # Required-Start:    $local_fs $remote_fs $network $syslog
@@ -7,62 +6,50 @@
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: starts the mesos master
-# Description:       The Mesos master distributes computing tasks to Mesos slaves
+# Description:       The Mesos master distributes computing tasks to slaves
 ### END INIT INFO
- 
+set -ue
+
 NAME="mesos-master"
 DESC="mesos master"
 
-# Include storm defaults if available
-if [ -f /etc/default/mesos ] ; then
-    . /etc/default/mesos
-fi
-
-if [ -f /etc/default/mesos-master ] ; then
-    . /etc/default/mesos-master
-fi
-
-
-set -e
- 
+[ ! -f /etc/default/mesos ] || . /etc/default/mesos
 . /lib/lsb/init-functions
 
-PID=${MESOS_MASTER_PID}
-MESOS_CMD="/usr/local/sbin/mesos-master -- --log_dir=${LOG_DIR} --port=${MASTER_PORT} \
-	   --cluster=${CLUSTER}"
- 
+PID="$MESOS_MASTER_PID"
+MESOS=/usr/local/sbin/mesos-master
+
 case "$1" in
   start)
     ulimit -n 8192
-
     echo -n "Starting $DESC: "
-    start-stop-daemon --start --background --quiet --pidfile ${PID} --make-pidfile \
-        --exec ${MESOS_CMD} || true
+    start-stop-daemon --start --background --quiet \
+                      --pidfile "$PID" --make-pidfile \
+                      --exec "$MESOS" -- \
+                      --log_dir="$LOG_DIR" --port="$PORT" --cluster="$CLUSTER"
     echo "$NAME."
     ;;
   stop)
     echo -n "Stopping $DESC: "
-    start-stop-daemon --stop --quiet --pidfile ${PID} \
-        --exec ${MESOS_CMD} || true
+    start-stop-daemon --stop --quiet --pidfile "$PID"
     echo "$NAME."
     ;;
   restart)
     echo -n "Restarting $DESC: "
-    start-stop-daemon --stop --quiet --pidfile ${PID} \
-        --exec ${MESOS_CMD} || true
+    start-stop-daemon --stop --quiet --pidfile "$PID"
     sleep 1
-    start-stop-daemon --start --background --quiet --pidfile ${PID} --make-pidfile \
-        --exec ${MESOS_CMD} || true
+    start-stop-daemon --start --background --quiet \
+                      --pidfile "$PID" --make-pidfile \
+                      --exec "$MESOS" -- \
+                      --log_dir="$LOG_DIR" --port="$PORT" --cluster="$CLUSTER"
     echo "$NAME."
     ;;
   status)
-      status_of_proc -p ${PID} $NAME $NAME && exit 0 || exit $?
-      ;;
+    status_of_proc -p "$PID" "$NAME" "$NAME"
+    ;;
   *)
-    N=/etc/init.d/$NAME
-    echo "Usage: $N {start|stop|restart|status}" >&2
+    echo "Usage: $0 {start|stop|restart|status}" >&2
     exit 1
     ;;
 esac
- 
-exit 0
+

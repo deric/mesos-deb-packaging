@@ -1,8 +1,0 @@
-# /etc/default/mesos-master
-
-#_ START? _#
-ENABLE="yes"
-
-#_ PID FILE _#
-MESOS_MASTER_PID="/var/run/mesos-master.pid"
-
