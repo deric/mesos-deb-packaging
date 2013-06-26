@@ -2,8 +2,29 @@
 set -e
 
 case "$1" in
+  configure)
+    #update paths to libraries
+    ldconfig
+    if [ -f /tmp/mesos-master-reload ]; then
+      if [ -x /usr/sbin/invoke-rc.d ]; then
+        invoke-rc.d mesos-master start
+      else
+        /etc/init.d/mesos-master start
+      fi
+      rm /tmp/mesos-master-reload
+    fi
 
-  configure|abort-upgrade|abort-remove|abort-deconfigure)
+    if [ -f /tmp/mesos-slave-reload ]; then
+      if [ -x /usr/sbin/invoke-rc.d ]; then
+        invoke-rc.d mesos-slave start
+      else
+        /etc/init.d/mesos-slave start
+      fi
+      rm /tmp/mesos-slave-reload
+    fi
+    ;;
+
+  abort-upgrade|abort-remove|abort-deconfigure)
     ;;
 
   *)
@@ -11,13 +32,6 @@ case "$1" in
     exit 1
     ;;
 esac
-
-# TODO we should restart mesos-slave or master
-
-#run ldconfig in order to have available libmesos.so
-
-ldconfig
-
 
 #DEBHELPER#
 

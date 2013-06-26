@@ -129,7 +129,9 @@ function deb_ {
          --deb-recommends zookeeper-bin
          -d libcurl3
          -d default-jre
+         --before-install "$this/debian/mesos.preinst"
          --after-install "$this/debian/mesos.postinst"
+         --before-remove "$this/debian/mesos.prerm"
          --after-remove "$this/debian/mesos.postrm"
          -s dir )
   ( cd deb && "$gem_bin"/fpm "${opts[@]}" -p "$this"/pkg.deb -- . )
