@@ -8,7 +8,7 @@ script
   [ ! -f /etc/default/mesos-slave ] || . /etc/default/mesos-slave
   [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
   exec /usr/local/sbin/mesos-slave \
-    "${MASTER:+--master=$MASTER}" \
+    ${MASTER:+--master=$MASTER} \
     >> "$LOGS"/slave.log 2>&1
 end script
 
