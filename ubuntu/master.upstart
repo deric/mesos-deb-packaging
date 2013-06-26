@@ -8,7 +8,9 @@ script
   [ ! -f /etc/default/mesos-master ] || . /etc/default/mesos-master
   [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
   exec /usr/local/sbin/mesos-master \
-    --zk=file:///etc/mesos/zk --port="$MASTER_PORT" --cluster="${CLUSTER:-}" \
+    "${ZK:+--zk=$ZK}" \
+    "${PORT:+--port=$PORT}" \
+    "${CLUSTER:+--cluster=$CLUSTER}" \
     >> "$LOGS"/master.log 2>&1
 end script
 

@@ -53,7 +53,7 @@ function create_installation {(
   cd deb
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   cp ../CHANGELOG               usr/share/doc/mesos/
-  cp "$this"/default/mesos      etc/default/mesos
+  cp "$this"/default/mesos*     etc/default/
   init_scripts "$linux"
   jars
 )}

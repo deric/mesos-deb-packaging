@@ -1,4 +1,3 @@
-MASTER_PORT=5050
 LOGS="/var/log/mesos"
 ULIMIT="-n 8192"
 
