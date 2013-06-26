@@ -15,12 +15,13 @@ this="$(cd "$(dirname "$0")" && pwd -P)"
 name=mesos
 version=0.14.0
 
-function main {
-  checkout create_package
-}
+needs_build=true
 
-function create_package {
-  build
+function main {
+  checkout
+  if [[ $needs_build == "true" ]]; then
+    build
+  fi
   create_installation
   pkg
 }
@@ -31,7 +32,10 @@ function checkout {
   then 
     msg "Dir incubator-mesos exists"
     cd $repo_dir
-    git pull
+    local gitst=`git pull | tail -n 1`
+    if [[ "$gitst" == "Already up-to-date." ]]; then
+      needs_build=false
+    fi
   else 
     git clone git://github.com/apache/incubator-mesos.git
     cd $repo_dir
@@ -46,6 +50,9 @@ function build {(
   cd build
   ../configure
   make
+  local pwd="$(pwd -P)"
+  mkdir -p deb
+  ( cd build && make install DESTDIR="$pwd"/deb )
 )}
 
 function lsb_release_tag {
@@ -53,9 +60,6 @@ function lsb_release_tag {
 }
 
 function create_installation {(
-  local pwd="$(pwd -P)"
-  mkdir -p deb
-  ( cd build && make install DESTDIR="$pwd"/deb )
   cd deb
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   cp ../CHANGELOG               usr/share/doc/mesos/
@@ -78,8 +82,11 @@ function init_scripts {
 }
 
 function jars {
-  mkdir -p usr/share/java/
-  mv ../build/src/mesos-*.jar usr/share/java/
+  local mesos_jar="../build/src/mesos-*.jar"
+  if [[ -f $mesos_jar ]]; then
+    mkdir -p usr/share/java/
+    mv ../build/src/mesos-*.jar usr/share/java/
+  fi
 }
 
 function pkg {
@@ -108,6 +115,7 @@ function deb_ {
   then version="$version~$(git log -n1 --format=%h)"
   fi
   local opts=()
+  pkg="$name"_"$version"_"$arch".deb
   opts=( -t deb
          -n "$name"
          -v "$version"
@@ -134,7 +142,7 @@ function deb_ {
          --before-remove "$this/debian/mesos.prerm"
          --after-remove "$this/debian/mesos.postrm"
          -s dir )
-  ( cd deb && "$gem_bin"/fpm "${opts[@]}" -p "$this"/pkg.deb -- . )
+  ( cd deb && "$gem_bin"/fpm "${opts[@]}" -p "$this"/"$pkg" -- . )
 }
 
 function rpm_ {
@@ -142,7 +150,6 @@ function rpm_ {
 }
 
 function upload {
-  local pkg="$name"_"$version"_"$arch".deb
   local url="$1"/"$linux"/"$pkg"
   curl -X PUT "$url" --data-binary @"$2" >/dev/null
   out "$url"
