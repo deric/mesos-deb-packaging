@@ -1,1 +1,1 @@
-MASTER=zk://localhost:2181/mesos
+MASTER=`cat /etc/mesos/zk`
