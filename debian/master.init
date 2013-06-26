@@ -8,7 +8,7 @@
 # Short-Description: starts the mesos master
 # Description:       The Mesos master distributes computing tasks to slaves
 ### END INIT INFO
-set -ue
+set -e
 
 NAME="mesos-master"
 DESC="mesos master"
@@ -59,11 +59,10 @@ case "$1" in
     log_end_msg $?
     ;;
   status)
-    status_of_proc -p "$PID" "$NAME" "$NAME"
+    status_of_proc -p "$PID" "$NAME" "$NAME" && exit 0 || exit $?
     ;;
   *)
-    N=/etc/init.d/$NAME
-    echo "Usage: $N {start|stop|restart|status}" >&2
+    echo "Usage: $NAME {start|stop|restart|status}" >&2
     exit 1
     ;;
 esac
