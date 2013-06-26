@@ -13,6 +13,8 @@ set -ue
 NAME="mesos-slave"
 DESC="mesos slave"
 
+. /lib/lsb/init-functions
+
 # Include storm defaults if available
 if [ -f /etc/default/mesos ] ; then
     . /etc/default/mesos
