@@ -128,8 +128,20 @@ function logrotate {
   esac
 }
 
+function get_codename {
+  case "$linux" in
+    ubuntu/*|debian/*)
+      lsb_release -c | cut -d: -f2 | tr A-Z a-z | xargs | tr ' ' '/'
+    ;;
+    centos/*|redhat/*)
+      err "not implemented yet"
+    ;;
+    *)                 err "Not sure how to configure logrotate for: $linux" ;;
+  esac
+}
+
 function deb_ {
-  local version="$version"
+  local version="$version-$codename"
   if git rev-parse --git-dir &>/dev/null
   then version="$version~$(git log -n1 --format=%h)"
   fi
@@ -178,6 +190,7 @@ function get_system_info {
   linux="$(lsb_release_tag)"            # <distro>/<version>, like ubuntu/12.10
   arch="$(architecture)"          # In the format used to label distro packages
   gem_bin="$(find_gem_bin)"                          # Might not be on the PATH
+  codename="$(get_codename)"
 }
 
 function msg { out "$*" >&2 ;}
