@@ -7,10 +7,20 @@ case "$1" in
 
   upgrade)
    if [ -f /var/run/mesos-master.pid ]; then
-     touch /tmp/mesos-master-reload  
+     touch /tmp/mesos-master-reload
+     if [ -x /usr/sbin/invoke-rc.d ]; then
+        invoke-rc.d mesos-master stop
+      else
+        /etc/init.d/mesos-master stop
+     fi
    fi
    if [ -f /var/run/mesos-slave.pid ]; then
      touch /tmp/mesos-slave-reload
+     if [ -x /usr/sbin/invoke-rc.d ]; then
+       invoke-rc.d mesos-slave stop
+     else
+       /etc/init.d/mesos-slave stop
+     fi
    fi
    ;;
 

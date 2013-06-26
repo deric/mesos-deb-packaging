@@ -2,7 +2,7 @@
 set -e
 
 case "$1" in
-  remove|remove-in-favour|deconfigure|deconfigure-in-favour)
+  upgrade|remove|remove-in-favour|deconfigure|deconfigure-in-favour)
     if [ -f /var/run/mesos-master.pid ]; then
       if [ -x /usr/sbin/invoke-rc.d ]; then
         invoke-rc.d mesos-master stop
@@ -20,7 +20,7 @@ case "$1" in
     fi
     ;;
 
-  upgrade|failed-upgrade)
+  failed-upgrade)
     ;;
 
   *)
