@@ -18,12 +18,17 @@ version=0.14.0
 needs_build=true
 
 function main {
+  cleanup
   checkout
   if [[ $needs_build == "true" ]]; then
     build
   fi
   create_installation
   pkg
+}
+
+function cleanup {
+  rm -f *.deb
 }
 
 function checkout {
