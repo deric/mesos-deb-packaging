@@ -121,6 +121,7 @@ function deb_ {
          --deb-recommends zookeeperd
          --deb-recommends zookeeper-bin
          -d libcurl3
+         -d default-jre
          --after-install "$this/debian/mesos.postinst"
          --after-remove "$this/debian/mesos.postrm"
          -s dir )
