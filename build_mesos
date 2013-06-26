@@ -49,15 +49,15 @@ function checkout {
 }
 
 function build {(
+  local pwd="$(pwd -P)"
   autoreconf -f -i -Wall,no-obsolete
   ./bootstrap
   mkdir -p build
   cd build
   ../configure
   make
-  local pwd="$(pwd -P)"
-  mkdir -p deb
-  ( cd build && make install DESTDIR="$pwd"/deb )
+  mkdir -p "$pwd"/deb
+  ( make install DESTDIR="$pwd"/deb )
 )}
 
 function lsb_release_tag {
