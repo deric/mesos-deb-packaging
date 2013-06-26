@@ -69,7 +69,7 @@ function create_installation {(
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   cp ../CHANGELOG               usr/share/doc/mesos/
   cp "$this"/default/mesos*     etc/default/
-  echo zk://localhost:2181/mesos > /etc/mesos/zk
+  echo zk://localhost:2181/mesos > etc/mesos/zk #path must be relative
   init_scripts "$linux"
   logrotate "$linux"
   jars
