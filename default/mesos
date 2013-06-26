@@ -1,13 +1,3 @@
-# /etc/default/mesos
-
-RUN_MESOS_SLAVE=no
-RUN_MESOS_MASTER=no
-
-
-MASTER_PORT=5050
-MASTER_IP=localhost
-LOG_DIR="/var/log/mesos"
-MESOS_CONF="/etc/mesos"
-
-CLUSTER=""
+LOGS=/var/log/mesos
+ULIMIT="-n 8192"
 

@@ -1,5 +1,4 @@
-#! /bin/sh
- 
+#!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          mesos-slave
 # Required-Start:    $local_fs $remote_fs $network $syslog
@@ -7,49 +6,42 @@
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: starts the mesos slave
-# Description:       The Mesos master distributes computing tasks to Mesos slaves
+# Description:       The Mesos slave performs computing tasks
 ### END INIT INFO
- 
-# Include mesos defaults if available
+set -ue
+
+NAME="mesos-slave"
+DESC="mesos slave"
+
+# Include storm defaults if available
 if [ -f /etc/default/mesos ] ; then
     . /etc/default/mesos
 fi
 
-if [ -f /etc/default/mesos-slave ] ; then
-    . /etc/default/mesos-slave
-fi
+PID=/var/run/mesos-slave.pid
 
-set -e
- 
-. /lib/lsb/init-functions
-
-NAME="mesos-slave"
-DESC="mesos slave"
-DAEMON="/usr/local/sbin/mesos-slave"
-PID=${MESOS_SLAVE_PID}
-DAEMON_OPTS="--master=${MASTER_IP}:${MASTER_PORT}"
-
-test -x $DAEMON || exit 0
-
+go_daemon() {
+  [ ! -f /etc/default/mesos ]       || . /etc/default/mesos
+  [ ! -f /etc/default/mesos-slave ] || . /etc/default/mesos-slave
+  [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
+  exec /usr/local/sbin/mesos-slave \
+    ${MASTER:+--master=$MASTER} \
+    >> "$LOGS"/slave.log 2>&1
+}
 
 start() {
-    if [ -n "$ULIMIT" ]; then
-        # Set the ulimits
-        ulimit $ULIMIT
-    fi
-
-    start-stop-daemon --start --quiet --make-pidfile --pidfile $PID \
-      --retry 5 --oknodo --background \
-      --exec /bin/bash -- -c "$DAEMON $DAEMON_OPTS >> $LOGFILE 2>&1"
+  start-stop-daemon --start --background --quiet \
+                    --pidfile "$PID" --make-pidfile --exec "$0" -- go_daemon
 }
 
 stop() {
-    start-stop-daemon --stop --quiet --pidfile $PID \
-      --retry 5 --oknodo --exec $DAEMON
+  start-stop-daemon --stop --quiet --pidfile "$PID"
 }
 
-
 case "$1" in
+  go_daemon)
+    go_daemon
+    ;;
   start)
     log_daemon_msg "Starting $DESC" "$NAME"
     start
@@ -68,8 +60,8 @@ case "$1" in
     log_end_msg $?
     ;;
   status)
-      status_of_proc -p ${PID} $NAME $NAME && exit 0 || exit $?
-      ;;
+    status_of_proc -p "$PID" "$NAME" "$NAME"
+    ;;
   *)
     N=/etc/init.d/$NAME
     echo "Usage: $N {start|stop|restart|status}" >&2

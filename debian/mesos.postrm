@@ -4,7 +4,7 @@ set -e
 
 case "$1" in
   purge)
-    rm -rf /usr/local/share/mesos /var/log/mesos /etc/mesos
+    rm -rf /var/log/mesos /etc/mesos
     ;;
 
   remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
