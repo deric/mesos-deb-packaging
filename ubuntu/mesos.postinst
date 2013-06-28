@@ -3,11 +3,6 @@ set -e
 
 case "$1" in
 
-  configure)
-    update-rc.d mesos-master defaults
-    update-rc.d mesos-slave defaults
-    ;;
-
   configure|abort-upgrade|abort-remove|abort-deconfigure)
     ;;
 

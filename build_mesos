@@ -42,8 +42,8 @@ function build {(
   make
 )}
 
-function lsb_release_tag {
-  lsb_release --id --release | cut -d: -f2 | tr A-Z a-z | xargs | tr ' ' '/'
+function os_release {
+  ( source /etc/os-release && out "$ID/$VERSION_ID" )
 }
 
 function create_installation {(
@@ -101,6 +101,7 @@ function deb_ {
   if git rev-parse --git-dir &>/dev/null
   then version="$version~$(git log -n1 --format=%h)"
   fi
+  local scripts="${linux%%/*}"
   local opts=()
   opts=( -t deb
          -n "$name"
@@ -123,8 +124,8 @@ function deb_ {
          --deb-recommends zookeeper-bin
          -d libcurl3
          -d default-jre
-         --after-install "$this/debian/mesos.postinst"
-         --after-remove "$this/debian/mesos.postrm"
+         --after-install "$this/$scripts/mesos.postinst"
+         --after-remove "$this/$scripts/mesos.postrm"
          -s dir )
   ( cd deb && "$gem_bin"/fpm "${opts[@]}" -p "$this"/pkg.deb -- . )
 }
@@ -135,13 +136,13 @@ function rpm_ {
 
 function upload {
   local pkg="$name"_"$version"_"$arch".deb
-  local url="$1"/"$linux"/"$pkg"
+  local url="${1%/}"/"$linux"/"$pkg"
   curl -X PUT "$url" --data-binary @"$2" >/dev/null
   out "$url"
 }
 
 function get_system_info {
-  linux="$(lsb_release_tag)"            # <distro>/<version>, like ubuntu/12.10
+  linux="$(os_release)"                 # <distro>/<version>, like ubuntu/12.10
   arch="$(architecture)"          # In the format used to label distro packages
   gem_bin="$(find_gem_bin)"                          # Might not be on the PATH
 }
