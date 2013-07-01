@@ -3,10 +3,14 @@ set -o errexit -o nounset -o pipefail
 export LC_ALL=C
 function -h {
 cat <<USAGE
- USAGE: build_mesos
+ USAGE: build_mesos (--repo <git URL>)?
 
-  In the first form, performs a build in a temporary directory and creates a
-  package.
+  Performs a build in ./mesos-repo after checking out a recent copy of Mesos.
+  The default is to checkout:
+
+    $repo
+
+  You can specify a different Mesos Git URL with \`--repo'.
 
 USAGE
 }; function --help { -h ;}
@@ -16,6 +20,10 @@ name=mesos
 version=0.14.0
 
 function main {
+  if [[ ${1-} = --repo ]]
+  then repo="$2" ; shift ; shift             # Global variables getting munged.
+  fi
+  [[ $# -eq 0 ]] || err 'Argument error. Please see help.'
   checkout go
 }
 
@@ -25,12 +33,13 @@ function go {
   pkg
 }
 
+repo=https://git-wip-us.apache.org/repos/asf/incubator-mesos.git
 function checkout {
-  if [[ -d incubator-mesos ]]
-  then msg "Dir incubator-mesos exists; skipping checkout."
-  else git clone git://github.com/apache/incubator-mesos.git
+  if [[ -d mesos-repo ]]
+  then msg "Found directory \`mesos-repo'; skipping checkout."
+  else msg "Cloning: $repo" && git clone "$repo" mesos-repo
   fi
-  ( cd incubator-mesos && "$@" )
+  ( cd mesos-repo && "$@" )
 }
 
 function build {(
