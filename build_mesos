@@ -10,7 +10,9 @@ cat <<USAGE
 
     $repo
 
-  You can specify a different Mesos Git URL with \`--repo'.
+  You can specify a different Mesos Git URL with \`--repo'. Note that it does
+  not work to use an \`='; the \`--repo' option must be separated from the Git
+  URL with a space.
 
 USAGE
 }; function --help { -h ;}
