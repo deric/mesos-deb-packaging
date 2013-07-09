@@ -35,7 +35,7 @@ function go {
   pkg
 }
 
-repo=https://git-wip-us.apache.org/repos/asf/incubator-mesos.git
+repo=git://git.apache.org/incubator-mesos.git
 function checkout {
   if [[ -d mesos-repo ]]
   then msg "Found directory \`mesos-repo'; skipping checkout."
