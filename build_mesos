@@ -37,11 +37,13 @@ function go {
 
 repo=https://git-wip-us.apache.org/repos/asf/mesos.git
 function checkout {
+  local resource="${repo%%#*}"
+  local ref="$(url_fragment "$repo")"
   if [[ -d mesos-repo ]]
   then msg "Found directory \`mesos-repo'; skipping checkout."
-  else msg "Cloning: $repo" && git clone "$repo" mesos-repo
+  else msg "Cloning: $resource at $ref" && git clone "$resource" mesos-repo
   fi
-  ( cd mesos-repo && "$@" )
+  ( cd mesos-repo && git checkout -f "${ref:-master}" && "$@" )
 }
 
 function build {(
@@ -156,6 +158,12 @@ function get_system_info {
   linux="$(os_release)"                 # <distro>/<version>, like ubuntu/12.10
   arch="$(architecture)"          # In the format used to label distro packages
   gem_bin="$(find_gem_bin)"                          # Might not be on the PATH
+}
+
+function url_fragment {
+  local step1="${1%#}"#       # Ensure URL ends in #, even if it has a fragment
+  local step2="${step1#*#}"                                # Clip up to first #
+  out "${step2%#}"                    # Remove trailing #, guaranteed by step 1
 }
 
 function msg { out "$*" >&2 ;}
