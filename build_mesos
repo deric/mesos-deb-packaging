@@ -43,6 +43,9 @@ function checkout {
   local url=( $(url_split "$repo") )
   local repository="${url[0]}"
   local query="${url[1]}"
+  if [[ ${url[2]} ]]
+  then err "Setting fragment (#) does nothing. Try query (?) instead."
+  fi
   case "$query" in
     ref=*|h=*|branch=*|tag=*) local ref="${query#*=}" ;;
     *)                        local ref="$query" ;;
