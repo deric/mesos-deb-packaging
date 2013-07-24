@@ -14,6 +14,9 @@ cat <<USAGE
   not work to use an \`='; the \`--repo' option must be separated from the Git
   URL with a space.
 
+  The repo can be given as ...?ref=prod7 or even ...?prod7 to select a
+  particular branch to build.
+
 USAGE
 }; function --help { -h ;}
 
@@ -37,13 +40,18 @@ function go {
 
 repo=https://git-wip-us.apache.org/repos/asf/mesos.git
 function checkout {
-  local resource="${repo%%#*}"
-  local ref="$(url_fragment "$repo")"
+  local url=( $(url_split "$repo") )
+  local repository="${url[0]}"
+  local query="${url[1]}"
+  case "$query" in
+    ref=*|h=*|branch=*|tag=*) local ref="${query#*=}" ;;
+    *)                        local ref="$query" ;;
+  esac
   if [[ -d mesos-repo ]]
   then msg "Found directory \`mesos-repo'; skipping checkout."
   else msg "Cloning: $resource at $ref" && git clone "$resource" mesos-repo
   fi
-  ( cd mesos-repo && git checkout -f "${ref:-master}" && "$@" )
+  ( cd mesos-repo && ( [[ ! ${ref:-} ]] || git checkout -f "$ref" ) && "$@" )
 }
 
 function build {(
@@ -166,6 +174,18 @@ function url_fragment {
   out "${step2%#}"                    # Remove trailing #, guaranteed by step 1
 }
 
+# Split URL in to resource, query and fragment.
+function url_split {
+  local fragment= query=
+  local sans_fragment="${1%%#*}"
+  local sans_query="${sans_fragment%%'?'*}"
+  [[ $1             = $sans_fragment ]] || fragment="${1#*#}"
+  [[ $sans_fragment = $sans_query    ]] || query="${sans_fragment#*'?'}"
+  out "$sans_query"
+  out "$query"
+  out "$fragment"
+}
+
 function msg { out "$*" >&2 ;}
 function err { local x=$? ; msg "$*" ; return $(( $x == 0 ? 1 : $x )) ;}
 function out { printf '%s\n' "$*" ;}
@@ -173,7 +193,7 @@ function out { printf '%s\n' "$*" ;}
 if [[ ${1:-} ]] && declare -F | cut -d' ' -f3 | fgrep -qx -- "${1:-}"
 then
   case "$1" in
-    -h|--help) : ;; # Skip system info lookup
+    -h|--help|url_split) : ;; # Skip system info lookup
     *)         get_system_info ;;
   esac
   "$@"
