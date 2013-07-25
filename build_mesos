@@ -42,8 +42,8 @@ repo=https://git-wip-us.apache.org/repos/asf/mesos.git
 function checkout {
   local url=( $(url_split "$repo") )
   local repository="${url[0]}"
-  local query="${url[1]}"
-  if [[ ${url[2]} ]]
+  local query="${url[1]:-}"
+  if [[ ${url[2]:-} ]]
   then err "Setting fragment (#) does nothing. Try query (?) instead."
   fi
   case "$query" in
@@ -52,7 +52,7 @@ function checkout {
   esac
   if [[ -d mesos-repo ]]
   then msg "Found directory \`mesos-repo'; skipping checkout."
-  else msg "Cloning: $resource at $ref" && git clone "$resource" mesos-repo
+  else msg "Cloning: $repository at $ref" && git clone "$repository" mesos-repo
   fi
   ( cd mesos-repo && ( [[ ! ${ref:-} ]] || git checkout -f "$ref" ) && "$@" )
 }
