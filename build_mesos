@@ -3,7 +3,7 @@ set -o errexit -o nounset -o pipefail
 export LC_ALL=C
 function -h {
 cat <<USAGE
- USAGE: build_mesos (--repo <git URL>)?
+ USAGE: build_mesos (--repo <git URL>)? (--nominal-version <version>)?
 
   Performs a build in ./mesos-repo after checking out a recent copy of Mesos.
   The default is to checkout:
@@ -25,10 +25,14 @@ name=mesos
 version=0.14.0
 
 function main {
-  if [[ ${1-} = --repo ]]
-  then repo="$2" ; shift ; shift             # Global variables getting munged.
-  fi
-  [[ $# -eq 0 ]] || err 'Argument error. Please see help.'
+  while [[ $# -gt 0 ]]
+  do
+    case "$1" in                                      # Munging globals, beware
+      --repo)                   repo="$2"    ; shift 2 ;;
+      --nominal-version)        version="$2" ; shift 2 ;;
+      *)                        err 'Argument error. Please see help.' ;;
+    esac
+  done
   checkout go
 }
 
