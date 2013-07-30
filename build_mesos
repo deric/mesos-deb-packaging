@@ -200,8 +200,8 @@ function out { printf '%s\n' "$*" ;}
 if [[ ${1:-} ]] && declare -F | cut -d' ' -f3 | fgrep -qx -- "${1:-}"
 then
   case "$1" in
-    -h|--help|url_split) : ;; # Skip system info lookup
-    *)         get_system_info ;;
+    -h|--help|url_split|checkout) : ;; # Skip system info lookup
+    *)                            get_system_info ;;
   esac
   "$@"
 else
