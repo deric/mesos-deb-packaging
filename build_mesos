@@ -95,9 +95,9 @@ function os_release {
 
 function create_installation {(
   local pwd="$(pwd -P)"
-  mkdir -p deb
-  ( cd build && make install DESTDIR="$pwd"/deb )
-  cd deb
+  mkdir -p toor
+  ( cd build && make install DESTDIR="$pwd"/toor )
+  cd toor
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   cp ../CHANGELOG               usr/share/doc/mesos/
   cp "$this"/default/mesos*     etc/default/
@@ -108,12 +108,18 @@ function create_installation {(
 
 function init_scripts {
   case "$1" in
-    debian/*) mkdir -p etc/init.d
-              cp -p "$this"/debian/master.init etc/init.d/mesos-master
-              cp -p "$this"/debian/slave.init etc/init.d/mesos-slave ;;
-    ubuntu/*) mkdir -p etc/init
-              cp "$this"/ubuntu/master.upstart etc/init/mesos-master.conf
-              cp "$this"/ubuntu/slave.upstart etc/init/mesos-slave.conf ;;
+    debian/*)
+      mkdir -p etc/init.d
+      cp -p "$this"/debian/master.init etc/init.d/mesos-master
+      cp -p "$this"/debian/slave.init etc/init.d/mesos-slave ;;
+    ubuntu/*)
+      mkdir -p etc/init
+      cp "$this"/ubuntu/master.upstart etc/init/mesos-master.conf
+      cp "$this"/ubuntu/slave.upstart etc/init/mesos-slave.conf ;;
+    redhat/6|redhat/6.*|centos/6|centos/6.*)
+      mkdir -p etc/init
+      cp "$this"/ubuntu/master.upstart etc/init/mesos-master.conf
+      cp "$this"/ubuntu/slave.upstart etc/init/mesos-slave.conf ;;
     *) err "Not sure how to make init scripts for: $1" ;;
   esac
 }
@@ -174,11 +180,37 @@ function deb_ {
          --after-install "$this/$scripts/mesos.postinst"
          --after-remove "$this/$scripts/mesos.postrm"
          -s dir )
-  ( cd deb && "$gem_bin"/fpm "${opts[@]}" -p "$this"/pkg.deb -- . )
+  ( cd toor && "$gem_bin"/fpm "${opts[@]}" -p "$this"/pkg.deb -- . )
 }
 
 function rpm_ {
-  err "Not implemented."
+  local version="$version"
+  if git rev-parse --git-dir &>/dev/null
+  then version="$version~$(git log -n1 --format=%h)"
+  fi
+  local scripts="${linux%%/*}"
+  local opts=()
+  opts=( -t rpm
+         -n "$name"
+         -v "$version"
+         --description
+"Cluster resouce manager with efficient resource isolation
+ Apache Mesos is a cluster manager that offers efficient resource isolation
+ and sharing across distributed applications, or frameworks. It can run
+ Hadoop, MPI, Hypertable, Spark (a new framework for low-latency interactive
+ and iterative jobs), and other applications."
+         --url=http://incubator.apache.org/mesos/
+         -a "$arch"
+         --category misc
+         --vendor ""
+         -m mesos-dev@incubator.apache.org
+         --prefix=/
+         -d libcurl
+         -d java-1.7.0-openjdk
+         --after-install "$this/$scripts/mesos.postinst"
+         --after-remove "$this/$scripts/mesos.postrm"
+         -s dir )
+  ( cd toor && "$gem_bin"/fpm "${opts[@]}" -p "$this"/pkg.rpm -- . )
 }
 
 function upload {
