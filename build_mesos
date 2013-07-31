@@ -71,7 +71,26 @@ function build {(
 )}
 
 function os_release {
-  ( source /etc/os-release && out "$ID/$VERSION_ID" )
+  msg "Trying /etc/os-release..."
+  if [[ -f /etc/os-release ]]
+  then
+    ( source /etc/os-release && out "$ID/$VERSION_ID" )
+    return 0
+  fi
+  msg "Trying /etc/redhat-release..."
+  if [[ -f /etc/redhat-release ]]
+  then
+    # Seems to be formatted as: <distro> release <version> (<remark>)
+    #                           CentOS release 6.3 (Final)
+    if [[ $(cat /etc/redhat-release) =~ \
+          ^(.+)' '+release' '+([^ ]+)' '+'('[^')']+')'$ ]]
+    then
+      out "${BASH_REMATCH[1]}/${BASH_REMATCH[2]}" | tr A-Z a-z
+      return 0
+    else err "Contents does not match "
+    fi
+  fi
+  err "Could not determine OS version!"
 }
 
 function create_installation {(
