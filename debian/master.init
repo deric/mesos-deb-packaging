@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ### BEGIN INIT INFO
 # Provides:          mesos-master
 # Required-Start:    $local_fs $remote_fs $network $syslog
@@ -17,20 +17,11 @@ DESC="mesos master"
 
 PID=/var/run/mesos-master.pid
 
-go_daemon() {
-  [ ! -f /etc/default/mesos ]        || . /etc/default/mesos
-  [ ! -f /etc/default/mesos-master ] || . /etc/default/mesos-master
-  [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
-  exec /usr/local/sbin/mesos-master \
-    ${ZK:+--zk=$ZK} \
-    ${PORT:+--port=$PORT} \
-    ${CLUSTER:+--cluster=$CLUSTER} \
-    >> "$LOGS"/master.log 2>&1
-}
-
 start() {
   start-stop-daemon --start --background --quiet \
-                    --pidfile "$PID" --make-pidfile --exec "$0" -- go_daemon
+                    --pidfile "$PID" --make-pidfile \
+                    --exec /usr/bin/mesos-init-wrapper -- master
+
 }
 
 stop() {
@@ -38,9 +29,6 @@ stop() {
 }
 
 case "$1" in
-  go_daemon)
-    go_daemon
-    ;;
   start)
     echo -n "Starting $DESC: "
     start

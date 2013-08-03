@@ -17,18 +17,10 @@ DESC="mesos slave"
 
 PID=/var/run/mesos-slave.pid
 
-go_daemon() {
-  [ ! -f /etc/default/mesos ]       || . /etc/default/mesos
-  [ ! -f /etc/default/mesos-slave ] || . /etc/default/mesos-slave
-  [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
-  exec /usr/local/sbin/mesos-slave \
-    ${MASTER:+--master=$MASTER} \
-    >> "$LOGS"/slave.log 2>&1
-}
-
 start() {
   start-stop-daemon --start --background --quiet \
-                    --pidfile "$PID" --make-pidfile --exec "$0" -- go_daemon
+                    --pidfile "$PID" --make-pidfile \
+                    --exec /usr/bin/mesos-init-wrapper -- slave
 }
 
 stop() {
@@ -36,9 +28,6 @@ stop() {
 }
 
 case "$1" in
-  go_daemon)
-    go_daemon
-    ;;
   start)
     echo -n "Starting $DESC: "
     start
