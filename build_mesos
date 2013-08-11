@@ -85,9 +85,15 @@ function os_release {
     if [[ $(cat /etc/redhat-release) =~ \
           ^(.+)' '+release' '+([^ ]+)' '+'('[^')']+')'$ ]]
     then
-      out "${BASH_REMATCH[1]}/${BASH_REMATCH[2]}" | tr A-Z a-z
+      local os version
+      case "${BASH_REMATCH[1]}" in
+        'Red Hat '*) os=RedHat ;;
+        *)           os="${BASH_REMATCH[1]}" ;;
+      esac
+      version="${BASH_REMATCH[2]}"
+      tr A-Z a-z <<<"$os/$version"
       return 0
-    else err "Contents does not match "
+    else err "Contents does not match: <distro> release <version> (<remark>)"
     fi
   fi
   err "Could not determine OS version!"
