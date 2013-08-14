@@ -8,20 +8,25 @@
 # Short-Description: starts the mesos master
 # Description:       The Mesos master distributes computing tasks to slaves
 ### END INIT INFO
-set -e
+# it's often easier to not use set -e and instead check the result of each command separately
+#set -e
 
 NAME="mesos-master"
 DESC="mesos master"
+DAEMON=/usr/local/sbin/mesos-master
+
+# if configuration files remain but the package has been removed
+test -x $DAEMON || exit 0
 
 . /lib/lsb/init-functions
 
-PID=/var/run/mesos-master.pid
+PIDFILE=/var/run/mesos-master.pid
 
 go_daemon() {
   [ ! -f /etc/default/mesos ]        || . /etc/default/mesos
   [ ! -f /etc/default/mesos-master ] || . /etc/default/mesos-master
   [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
-  exec /usr/local/sbin/mesos-master \
+  exec ${DAEMON} \
     ${ZK:+--zk=$ZK} \
     ${IP:+--ip=$IP} \
     ${PORT:+--port=$PORT} \
@@ -32,14 +37,53 @@ go_daemon() {
     >> "$LOGS"/master.log 2>&1
 }
 
-start() {
+start_mesos() {
   start-stop-daemon --start --background --quiet \
-                    --pidfile "$PID" --make-pidfile --exec "$0" -- go_daemon
+                    --pidfile "$PIDFILE" --make-pidfile --exec "$0" -- go_daemon
 }
 
-stop() {
-  start-stop-daemon --stop --quiet --pidfile "$PID"
+stop_mesos() {
+  start-stop-daemon --stop --quiet --pidfile "$PIDFILE"
 }
+
+status_mesos() {
+    if (type status_of_proc > /dev/null 2>&1) ; then
+        status_of_proc -p "${PIDFILE}" "${DAEMON}" "${NAME}"
+    else
+        status_of_proc() {
+            local pidfile daemon name status
+
+            pidfile=
+            OPTIND=1
+            while getopts p: opt ; do
+                case "$opt" in
+                    p)  pidfile="$OPTARG";;
+                esac
+            done
+            shift $(($OPTIND - 1))
+
+            if [ -n "$pidfile" ]; then
+                pidfile="-p $pidfile"
+            fi
+            daemon="$1"
+            name="$2"
+            status="0"
+            pidofproc $pidfile $daemon >/dev/null || status="$?"
+            if [ "$status" = 0 ]; then
+                log_success_msg "$name is running"
+                return 0
+            elif [ "$status" = 4 ]; then
+                log_failure_msg "could not access PID file for $name"
+                return $status
+            else
+                log_failure_msg "$name is not running"
+                return $status
+            fi
+        }
+        status_of_proc -p "${PIDFILE}" "${DAEMON}" "${NAME}"
+    fi
+}
+
 
 case "$1" in
   go_daemon)
@@ -47,23 +91,23 @@ case "$1" in
     ;;
   start)
     log_daemon_msg "Starting $DESC" "$NAME"
-    start
+    start_mesos
     log_end_msg $?
     ;;
   stop)
     log_daemon_msg "Stopping $DESC" "$NAME"
-    stop
+    stop_mesos
     log_end_msg $?
    ;;
   restart|force-reload)
     log_daemon_msg "Restarting $DESC" "$NAME"
-    stop
+    stop_mesos
     sleep 1
-    start
+    start_mesos
     log_end_msg $?
     ;;
   status)
-    status_of_proc -p "$PID" "$NAME" "$NAME" && exit 0 || exit $?
+    status_mesos
     ;;
   *)
     echo "Usage: $NAME {start|stop|restart|status}" >&2
