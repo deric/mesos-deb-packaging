@@ -1,9 +1,7 @@
-LOGS=/var/log/mesos
-ULIMIT="-n 8192"
-#MASTER=zk://localhost:2181/mesos
+MASTER=zk://localhost:2181/mesos
 #IP=0.0.0.0
-#PORT=5051
-#WORKDIR=/tmp/mesos
+PORT=5051
+WORKDIR=/tmp/mesos
 #OPTS="--hadoop_home=/usr/lib/hadoop-0.20/"
 
 # alternative is to use MESOS_<option> as an envar

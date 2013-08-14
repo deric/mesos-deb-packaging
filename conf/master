@@ -1,9 +1,7 @@
-LOGS=/var/log/mesos
-ULIMIT="-n 8192"
-#ZK=zk://localhost:2181/mesos
-#CLUSTER=mesos_cluster
+ZK=zk://localhost:2181/mesos
+CLUSTER=mesos_cluster
 #IP=0.0.0.0
-#PORT=5050
+PORT=5050
 #SLAVES=*
 #WHITELIST=*
 #OPTS="--hadoop_home=/usr/lib/hadoop-0.20/"
