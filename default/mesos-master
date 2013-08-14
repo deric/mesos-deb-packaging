@@ -1,3 +1,15 @@
-PORT=5050
-ZK=`cat /etc/mesos/zk`
+LOGS=/var/log/mesos
+ULIMIT="-n 8192"
+#ZK=zk://localhost:2181/mesos
+#CLUSTER=mesos_cluster
+#IP=0.0.0.0
+#PORT=5050
+#SLAVES=*
+#WHITELIST=*
+#OPTS="--hadoop_home=/usr/lib/hadoop-0.20/"
+
+# alternative is to use MESOS_<option> as an envar
+# option list is available with /usr/sbin/mesos-master --help
+# EX :
+# export MESOS_log_dir=/var/log/mesos
 

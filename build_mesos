@@ -69,7 +69,7 @@ function create_installation {(
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   cp ../CHANGELOG               usr/share/doc/mesos/
   cp "$this"/default/mesos*     etc/default/
-  echo zk://localhost:2181/mesos > etc/mesos/zk #path must be relative
+  #echo zk://localhost:2181/mesos > etc/mesos/zk #path must be relative
   init_scripts "$linux"
   logrotate "$linux"
   jars
@@ -168,6 +168,8 @@ function deb_ {
          --deb-recommends zookeeper-bin
          -d libcurl3
          -d default-jre
+         -d libunwind7|libunwind8
+         -d java7-jdk|java6-sdk
          --before-install "$this/debian/mesos.preinst"
          --after-install "$this/debian/mesos.postinst"
          --before-remove "$this/debian/mesos.prerm"
