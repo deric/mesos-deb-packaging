@@ -21,7 +21,7 @@ go_daemon() {
   [ ! -f /etc/default/mesos ]        || . /etc/default/mesos
   [ ! -f /etc/default/mesos-master ] || . /etc/default/mesos-master
   [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
-  exec /usr/sbin/mesos-master \
+  exec /usr/local/sbin/mesos-master \
     ${ZK:+--zk=$ZK} \
     ${IP:+--ip=$IP} \
     ${PORT:+--port=$PORT} \
