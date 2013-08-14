@@ -166,10 +166,9 @@ function deb_ {
          --deb-recommends zookeeper
          --deb-recommends zookeeperd
          --deb-recommends zookeeper-bin
-         -d libcurl3
-         -d default-jre
-         -d libunwind7|libunwind8
-         -d java7-jdk|java6-sdk
+         -d "libcurl3"
+         -d "default-jre"
+         -d "libunwind7|libunwind8"         
          --before-install "$this/debian/mesos.preinst"
          --after-install "$this/debian/mesos.postinst"
          --before-remove "$this/debian/mesos.prerm"
