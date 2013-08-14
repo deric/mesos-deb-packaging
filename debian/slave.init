@@ -24,7 +24,7 @@ PIDFILE=/var/run/mesos-slave.pid
 
 go_daemon() {
   [ ! -f /etc/default/mesos ]       || . /etc/default/mesos
-  [ ! -f /etc/default/mesos-slave ] || . /etc/default/mesos-slave
+  [ ! -f /etc/mesos/slave.conf ] || . /etc/mesos/slave.conf
   [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
   exec ${DAEMON} \
     ${MASTER:+--master=$MASTER} \

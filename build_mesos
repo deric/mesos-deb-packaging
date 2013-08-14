@@ -32,17 +32,18 @@ function cleanup {
 }
 
 function checkout {
-  local repo_dir="incubator-mesos"
+  local repo_dir="mesos"
   if [[ -d $repo_dir ]]
   then 
-    msg "Dir incubator-mesos exists"
+    msg "Dir ${repo_dir} exists"
     cd $repo_dir
     local gitst=`git pull | tail -n 1`
     if [[ "$gitst" == "Already up-to-date." ]]; then
       needs_build=false
+      msg "Building is not necessary. Skipping."
     fi
   else 
-    git clone git://github.com/apache/incubator-mesos.git
+    git clone git://github.com/apache/mesos.git
     cd $repo_dir
   fi
   ( git --no-pager log --pretty=format:"%h%x09%an%x09%ad%x09%s" --decorate --graph > CHANGELOG && "$@" )
@@ -68,7 +69,9 @@ function create_installation {(
   cd deb
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   cp ../CHANGELOG               usr/share/doc/mesos/
-  cp "$this"/default/mesos*     etc/default/
+  cp "$this"/default/mesos         etc/default/
+  cp "$this"/conf/master  etc/mesos/master.conf
+  cp "$this"/conf/slave  etc/mesos/slave.conf
   #echo zk://localhost:2181/mesos > etc/mesos/zk #path must be relative
   init_scripts "$linux"
   logrotate "$linux"

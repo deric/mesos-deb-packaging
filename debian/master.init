@@ -24,7 +24,7 @@ PIDFILE=/var/run/mesos-master.pid
 
 go_daemon() {
   [ ! -f /etc/default/mesos ]        || . /etc/default/mesos
-  [ ! -f /etc/default/mesos-master ] || . /etc/default/mesos-master
+  [ ! -f /etc/mesos/master.conf ] || . /etc/mesos/master.conf
   [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
   exec ${DAEMON} \
     ${ZK:+--zk=$ZK} \
