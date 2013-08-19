@@ -40,8 +40,8 @@ function master {
 # Send all output to syslog and tag with PID and executable basename.
 function logged {
   local tag="${1##*/}[$$]"
-  exec 1> >(logger -p user.info -t "$tag")
-  exec 2> >(logger -p user.err  -t "$tag")
+  exec 1> >(exec logger -p user.info -t "$tag")
+  exec 2> >(exec logger -p user.err  -t "$tag")
   exec "$@"
 }
 
