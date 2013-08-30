@@ -42,6 +42,14 @@ function go {
   pkg
 }
 
+use_git_version=false
+function maybe_append_git_hash {
+  if use_git_version && git rev-parse --git-dir &>/dev/null
+  then out "$1~$(git log -n1 --format=%h)"
+  else out "$1"
+  fi
+}
+
 repo=https://git-wip-us.apache.org/repos/asf/mesos.git
 function checkout {
   local url=( $(url_split "$repo") )
@@ -159,10 +167,7 @@ function find_gem_bin {
 }
 
 function deb_ {
-  local version="$version"
-  if git rev-parse --git-dir &>/dev/null
-  then version="$version~$(git log -n1 --format=%h)"
-  fi
+  local version="$(maybe_append_git_hash "$version")"
   local scripts="${linux%%/*}"
   local opts=()
   opts=( -t deb
@@ -193,10 +198,7 @@ function deb_ {
 }
 
 function rpm_ {
-  local version="$version"
-  if git rev-parse --git-dir &>/dev/null
-  then version="$version~$(git log -n1 --format=%h)"
-  fi
+  local version="$(maybe_append_git_hash "$version")"
   local scripts="${linux%%/*}"
   local opts=()
   opts=( -t rpm
