@@ -197,6 +197,13 @@ function rpm_ {
   fpm_ "${opts[@]}" -p "$this"/pkg.rpm
 }
 
+# Doesn't actually work the same as the others...
+function osx_ {(
+  arch=x86_64
+  gem_bin=/usr/bin
+  fpm_ -t osxpkg --osxpkg-identifier-prefix org.apache
+)}
+
 function fpm_ {
   local version="$(maybe_append_git_hash "$version")"
   local opts=( -s dir
@@ -255,8 +262,8 @@ function out { printf '%s\n' "$*" ;}
 if [[ ${1:-} ]] && declare -F | cut -d' ' -f3 | fgrep -qx -- "${1:-}"
 then
   case "$1" in
-    -h|--help|url_split|checkout|build) : ;; # Skip system info lookup
-    *)                                  get_system_info ;;
+    -h|--help|url_split|checkout|build|osx_) : ;; # Skip system info lookup
+    *) get_system_info ;;
   esac
   "$@"
 else
