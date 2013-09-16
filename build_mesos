@@ -224,6 +224,11 @@ and iterative jobs), and other applications."
   ( cd toor && "$gem_bin"/fpm "${opts[@]}" "$@" -- . )
 }
 
+function save_python_egg {
+  local eggs=( build/src/python/dist/*.egg )
+  cat "${eggs[@]}" > mesos.egg
+}
+
 function upload {
   local pkg="$name"_"$version"_"$arch".deb
   local url="${1%/}"/"$linux"/"$pkg"
