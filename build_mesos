@@ -83,7 +83,7 @@ function os_release {
   msg "Trying /etc/os-release..."
   if [[ -f /etc/os-release ]]
   then
-    ( source /etc/os-release && out "$ID/$VERSION_ID" )
+    ( source /etc/os-release && display_version "$ID" "$VERSION_ID" )
     return 0
   fi
   msg "Trying /etc/redhat-release..."
@@ -94,18 +94,26 @@ function os_release {
     if [[ $(cat /etc/redhat-release) =~ \
           ^(.+)' '+release' '+([^ ]+)' '+'('[^')']+')'$ ]]
     then
-      local os version
+      local os
       case "${BASH_REMATCH[1]}" in
         'Red Hat '*) os=RedHat ;;
         *)           os="${BASH_REMATCH[1]}" ;;
       esac
-      version="${BASH_REMATCH[2]}"
-      tr A-Z a-z <<<"$os/$version"
+      display_version "$os" "${BASH_REMATCH[2]}"
       return 0
-    else err "Contents does not match: <distro> release <version> (<remark>)"
+    else
+      err "/etc/redhat-release not like: <distro> release <version> (<remark>)"
     fi
   fi
   err "Could not determine OS version!"
+}
+
+function display_version {
+  local os="$( tr A-Z a-z <<<"$1" )" version="$( tr A-Z a-z <<<"$2" )"
+  case "$os" in
+    redhat|centos|debian) out "$os/${version%%.*}" ;;   # Ignore minor versions
+    *)                    out "$os/$version" ;;
+  esac
 }
 
 function create_installation {(
