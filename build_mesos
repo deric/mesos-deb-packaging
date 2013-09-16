@@ -40,11 +40,12 @@ function go {
   build
   create_installation
   pkg
+  save_python_egg
 }
 
 use_git_version=false
 function maybe_append_git_hash {
-  if use_git_version && git rev-parse --git-dir &>/dev/null
+  if $use_git_version && git rev-parse --git-dir &>/dev/null
   then out "$1~$(git log -n1 --format=%h)"
   else out "$1"
   fi
