@@ -22,6 +22,7 @@ function slave {
   [[ ! ${ULIMIT:-} ]] || ulimit $ULIMIT
   [[ ! ${MASTER:-} ]] || args+=( --master="$MASTER" )
   [[ ! ${LOGS:-} ]]   || args+=( --log_dir="$LOGS" )
+  [[ ! ${ISOLATION:-} ]] || args+=( --isolation="$ISOLATION" )
   logged /usr/local/sbin/mesos-slave "${args[@]}"
 }
 
