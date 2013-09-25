@@ -39,8 +39,10 @@ function checkout {
     cd $repo_dir
     local gitst=`git pull | tail -n 1`
     if [[ "$gitst" == "Already up-to-date." ]]; then
-      needs_build=false
-      msg "Building is not necessary. Skipping."
+      if [[ -d ${repo_dir}/build/src ]]; then
+	needs_build=false
+        msg "Building is not necessary. Skipping."
+      fi
     fi
   else 
     git clone git://github.com/apache/mesos.git
