@@ -12,6 +12,9 @@ Mesos is a cluster manager that provides efficient resource isolation and sharin
        gem install fpm
        sudo apt-get install python-dev autoconf automake git make libssl-dev libcurl3
 
+  * jdk, tested on Oracle java, but it should work on openjdk as well:
+
+       sudo apt-get install oracle-java7-jdk 
 
 ## Building package
 
