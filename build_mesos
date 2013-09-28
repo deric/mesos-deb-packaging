@@ -226,7 +226,7 @@ and iterative jobs), and other applications."
 
 function save_python_egg {
   local eggs=( build/src/python/dist/*.egg )
-  cat "${eggs[@]}" > mesos.egg
+  cat "${eggs[@]}" > "$this"/mesos.egg
 }
 
 function upload {
