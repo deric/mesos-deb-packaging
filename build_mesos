@@ -22,7 +22,7 @@ USAGE
 
 this="$(cd "$(dirname "$0")" && pwd -P)"
 name=mesos
-version=0.14.0
+version="${version:-9999}"
 
 function main {
   while [[ $# -gt 0 ]]
@@ -46,7 +46,7 @@ function go {
 use_git_version=false
 function maybe_append_git_hash {
   if $use_git_version && git rev-parse --git-dir &>/dev/null
-  then out "$1~$(git log -n1 --format=%h)"
+  then out "$1-g$(git log -n1 --format=%h)"
   else out "$1"
   fi
 }
