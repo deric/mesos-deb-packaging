@@ -127,7 +127,7 @@ function create_installation {(
   echo zk://localhost:2181/mesos > etc/mesos/zk
   init_scripts "$linux"
   jars
-  chown -R root:root ./
+  chown -R 0:0 .
 )}
 
 function init_scripts {
@@ -267,7 +267,7 @@ function out { printf '%s\n' "$*" ;}
 if [[ ${1:-} ]] && declare -F | cut -d' ' -f3 | fgrep -qx -- "${1:-}"
 then
   case "$1" in
-    -h|--help|url_split|checkout|build|osx_) : ;; # Skip system info lookup
+    -h|--help|go|url_split|create_installation|checkout|build|osx_) : ;;
     *) get_system_info ;;
   esac
   "$@"
