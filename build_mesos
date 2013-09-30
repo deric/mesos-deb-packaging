@@ -13,7 +13,7 @@ USAGE
 
 this="$(cd "$(dirname "$0")" && pwd -P)"
 name=mesos
-version=0.14.0
+version=0.15.0
 
 needs_build=true
 
