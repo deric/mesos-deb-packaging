@@ -168,9 +168,9 @@ function deb_ {
          -m mesos-dev@incubator.apache.org
          --prefix=/
          --deb-recommends "python >= 2.6"
-         --deb-recommends zookeeper
-         --deb-recommends zookeeperd
-         --deb-recommends zookeeper-bin
+         --deb-suggests zookeeper
+         --deb-suggests zookeeperd
+         --deb-suggests zookeeper-bin
          -d "libcurl3"
          -d "default-jre"
          -d "libunwind7|libunwind8"         
