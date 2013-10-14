@@ -31,6 +31,7 @@ go_daemon() {
     ${IP:+--ip=$IP} \
     ${PORT:+--port=$PORT} \
     ${WORKDIR:+--work_dir=$WORKDIR} \
+    ${ISOLATION:+--isolation=$ISOLATION} \
     $OPTS \
     >> "$LOGS"/slave.log 2>&1
 }
@@ -46,7 +47,7 @@ stop() {
 
 status_mesos() {
     if (type status_of_proc > /dev/null 2>&1) ; then
-        status_of_proc -p "${PIDFILE}" "${DAEMON}" "${NAME}"
+        status_of_proc -p "${PIDFILE}" "${DAEMON}" "${NAME}" && exit 0 || exit $?
     else
         status_of_proc() {
             local pidfile daemon name status
