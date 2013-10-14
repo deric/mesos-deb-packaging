@@ -5,10 +5,14 @@ respawn
 
 script
   [ ! -f /etc/default/mesos ]       || . /etc/default/mesos
-  [ ! -f /etc/default/mesos-slave ] || . /etc/default/mesos-slave
+  [ ! -f /etc/mesos/slave.conf ] || . /etc/mesos/slave.conf
   [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
   exec /usr/local/sbin/mesos-slave \
     ${MASTER:+--master=$MASTER} \
+    ${IP:+--ip=$IP} \
+    ${PORT:+--port=$PORT} \
+    ${WORKDIR:+--work_dir=$WORKDIR} \
+    ${ISOLATION:+--isolation=$ISOLATION} \
     >> "$LOGS"/slave.log 2>&1
 end script
 

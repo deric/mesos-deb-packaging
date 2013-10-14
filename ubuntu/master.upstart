@@ -5,12 +5,16 @@ respawn
 
 script
   [ ! -f /etc/default/mesos ]        || . /etc/default/mesos
-  [ ! -f /etc/default/mesos-master ] || . /etc/default/mesos-master
+  [ ! -f /etc/mesos/master.conf ] || . /etc/mesos/master.conf
   [ -z "${ULIMIT:-}" ] || ulimit $ULIMIT
   exec /usr/local/sbin/mesos-master \
     ${ZK:+--zk=$ZK} \
+    ${IP:+--ip=$IP} \
     ${PORT:+--port=$PORT} \
     ${CLUSTER:+--cluster=$CLUSTER} \
+    ${SLAVES:+--slaves=$SLAVES} \
+    ${WHITELIST:+--whitelist=$WHITELIST} \
+    $OPTS \
     >> "$LOGS"/master.log 2>&1
 end script
 
