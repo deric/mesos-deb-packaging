@@ -19,9 +19,9 @@ function slave {
   local args=()
   [[ ! -f /etc/default/mesos ]]       || . /etc/default/mesos
   [[ ! -f /etc/default/mesos-slave ]] || . /etc/default/mesos-slave
-  [[ ! ${ULIMIT:-} ]] || ulimit $ULIMIT
-  [[ ! ${MASTER:-} ]] || args+=( --master="$MASTER" )
-  [[ ! ${LOGS:-} ]]   || args+=( --log_dir="$LOGS" )
+  [[ ! ${ULIMIT:-} ]]    || ulimit $ULIMIT
+  [[ ! ${MASTER:-} ]]    || args+=( --master="$MASTER" )
+  [[ ! ${LOGS:-} ]]      || args+=( --log_dir="$LOGS" )
   [[ ! ${ISOLATION:-} ]] || args+=( --isolation="$ISOLATION" )
   logged /usr/local/sbin/mesos-slave "${args[@]}"
 }
@@ -30,7 +30,7 @@ function master {
   local args=()
   [[ ! -f /etc/default/mesos ]]        || . /etc/default/mesos
   [[ ! -f /etc/default/mesos-master ]] || . /etc/default/mesos-master
-  [[ ! ${ULIMIT:-} ]] || ulimit $ULIMIT
+  [[ ! ${ULIMIT:-} ]]  || ulimit $ULIMIT
   [[ ! ${ZK:-} ]]      || args+=( --zk="$ZK" )
   [[ ! ${PORT:-} ]]    || args+=( --port="$PORT" )
   [[ ! ${CLUSTER:-} ]] || args+=( --cluster="$CLUSTER" )
