@@ -15,14 +15,10 @@ this="$(cd "$(dirname "$0")" && pwd -P)"
 name=mesos
 version=0.16.0
 
-needs_build=true
-
 function main {
   cleanup
   checkout
-  if [[ $needs_build == "true" ]]; then
-    build
-  fi
+  build
   create_installation
   pkg
   finish
@@ -34,7 +30,7 @@ function cleanup {
 }
 
 function checkout {
-  repo_dir="mesos"
+  repo_dir="$pwd/mesos"
   if [[ -d $repo_dir ]]
   then 
     msg "Dir ${repo_dir} exists"
@@ -42,7 +38,6 @@ function checkout {
     local gitst=`git pull | tail -n 1`
     if [[ "$gitst" == "Already up-to-date." ]]; then
       if [[ -d ${repo_dir}/build/src ]]; then
-	needs_build=false
         msg "Building is not necessary. Skipping."
       fi
     fi
@@ -77,7 +72,7 @@ function lsb_release_tag {
 }
 
 function create_installation {(
-  cd deb
+  cd "$repo_dir"/deb
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   cp ../CHANGELOG               usr/share/doc/mesos/
   cp "$this"/gitlog  usr/share/doc/mesos
@@ -103,10 +98,12 @@ function init_scripts {
 }
 
 function jars {
-  local mesos_jar="../build/src/mesos-*.jar"
+  local mesos_jar="${repodir}/build/src/mesos-*.jar"
   if [[ -f $mesos_jar ]]; then
     mkdir -p usr/share/java/
-    mv ../build/src/mesos-*.jar usr/share/java/
+    mv $mesos_jar usr/share/java/
+  else
+    echo "could not find jar file: $mesos_jar"
   fi
 }
 
