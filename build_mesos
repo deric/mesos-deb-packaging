@@ -13,7 +13,7 @@ USAGE
 
 this="$(cd "$(dirname "$0")" && pwd -P)"
 name=mesos
-version=0.15.0
+version=0.16.0
 
 needs_build=true
 
@@ -25,14 +25,16 @@ function main {
   fi
   create_installation
   pkg
+  finish
 }
 
 function cleanup {
+  pwd="$(pwd -P)"
   rm -f *.deb
 }
 
 function checkout {
-  local repo_dir="mesos"
+  repo_dir="mesos"
   if [[ -d $repo_dir ]]
   then 
     msg "Dir ${repo_dir} exists"
@@ -48,7 +50,7 @@ function checkout {
     git clone git://github.com/apache/mesos.git
     cd $repo_dir
   fi
-  ( git --no-pager log --pretty=format:"%h%x09%an%x09%ad%x09%s" --decorate --graph > CHANGELOG && "$@" )
+  ( git --no-pager log --pretty=format:"%h%x09%an%x09%ad%x09%s" --decorate --graph > "$pwd/gitlog" && "$@" )
 }
 
 function build {(
@@ -63,6 +65,13 @@ function build {(
   ( make install DESTDIR="$pwd"/deb )
 )}
 
+function finish {
+  echo "removing build directory"
+  #remove build directory
+  rm -rf "$repo_dir"
+}
+
+
 function lsb_release_tag {
   lsb_release --id --release | cut -d: -f2 | tr A-Z a-z | xargs | tr ' ' '/'
 }
@@ -71,6 +80,7 @@ function create_installation {(
   cd deb
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   cp ../CHANGELOG               usr/share/doc/mesos/
+  cp "$this"/gitlog  usr/share/doc/mesos
   cp "$this"/default/mesos         etc/default/
   cp "$this"/conf/master  etc/mesos/master.conf
   cp "$this"/conf/slave  etc/mesos/slave.conf
