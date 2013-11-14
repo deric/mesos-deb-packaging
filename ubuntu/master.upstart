@@ -12,7 +12,6 @@ script
     ${IP:+--ip=$IP} \
     ${PORT:+--port=$PORT} \
     ${CLUSTER:+--cluster=$CLUSTER} \
-    ${SLAVES:+--slaves=$SLAVES} \
     ${WHITELIST:+--whitelist=$WHITELIST} \
     $OPTS \
     >> "$LOGS"/master.log 2>&1
