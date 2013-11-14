@@ -63,7 +63,7 @@ function build {(
 function finish {
   echo "removing build directory"
   #remove build directory
-  rm -rf "$repo_dir"
+  rm -rf "$repo_dir/build"
 }
 
 
@@ -75,7 +75,7 @@ function create_installation {(
   cd "$repo_dir"/deb
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   cp ../CHANGELOG               usr/share/doc/mesos/
-  cp "$this"/gitlog  usr/share/doc/mesos
+  mv "$this"/gitlog  usr/share/doc/mesos
   cp "$this"/default/mesos         etc/default/
   cp "$this"/conf/master  etc/mesos/master.conf
   cp "$this"/conf/slave  etc/mesos/slave.conf
@@ -98,7 +98,7 @@ function init_scripts {
 }
 
 function jars {
-  local mesos_jar="${repodir}/build/src/mesos-*.jar"
+  local mesos_jar="$(ls ${repo_dir}/build/src/mesos-*.jar)"
   if [[ -f $mesos_jar ]]; then
     mkdir -p usr/share/java/
     mv $mesos_jar usr/share/java/
