@@ -105,6 +105,15 @@ function os_release {
       err "/etc/redhat-release not like: <distro> release <version> (<remark>)"
     fi
   fi
+  if which sw_vers &> /dev/null
+  then
+    local product="$(sw_vers -productName)"
+    case "$product" in
+      'Mac OS X') display_version MacOSX "$(sw_vers -productVersion)" ;;
+      *) err "Expecting productName to be 'Mac OS X', not '$product'!";;
+    esac
+    return 0
+  fi
   err "Could not determine OS version!"
 }
 
@@ -112,6 +121,7 @@ function display_version {
   local os="$( tr A-Z a-z <<<"$1" )" version="$( tr A-Z a-z <<<"$2" )"
   case "$os" in
     redhat|centos|debian) out "$os/${version%%.*}" ;;   # Ignore minor versions
+    macosx)               out "$os/${version%.*}" ;;  # Ignore bug fix releases
     *)                    out "$os/$version" ;;
   esac
 }
