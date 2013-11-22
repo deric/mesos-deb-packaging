@@ -76,7 +76,7 @@ function build {(
   mkdir -p build
   cd build
   ../configure
-  make
+  make -j 16
 )}
 
 function os_release {
