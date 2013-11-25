@@ -23,6 +23,13 @@ CHECKPOINT=false
 # Isolation mechanism, may be one of: process, cgroups (default: process)
 ISOLATION="process"
 
+# The path to the cgroups hierarchy root
+CGROUPS_HIERARCHY="/cgroups"
+# Name of the root cgroup
+CGROUPS_ROOT="mesos"
+# List of subsystems to enable (e.g., 'cpu,freezer')
+CGROUPS_SUBSYSTEMS="cpu,memory,freezer"
+
 #OPTS="--hadoop_home=/usr/lib/hadoop-0.20/"
 
 # alternative is to use MESOS_<option> as an envar

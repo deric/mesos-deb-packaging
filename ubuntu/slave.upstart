@@ -13,6 +13,9 @@ script
     ${PORT:+--port=$PORT} \
     ${WORKDIR:+--work_dir=$WORKDIR} \
     ${ISOLATION:+--isolation=$ISOLATION} \
+    ${CGROUPS_HIERARCHY:+--cgroups_hierarchy=$CGROUPS_HIERARCHY} \
+    ${CGROUPS_ROOT:+--cgroups_root=$CGROUPS_ROOT} \
+    ${CGROUPS_SUBSYSTEMS:+--cgroups_subsystems=$CGROUPS_SUBSYSTEMS} \
     >> "$LOGS"/slave.log 2>&1
 end script
 
