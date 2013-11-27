@@ -76,7 +76,8 @@ function build {(
   mkdir -p build
   cd build
   ../configure
-  make -j 16
+  # optimal number of build jobs is 2x num_cores
+  make -j $(($(num_cores)*2))
 )}
 
 function os_release {
@@ -270,6 +271,23 @@ function url_split {
   out "$fragment"
 }
 
+# Print the number of cores detected. If we are unable to determine the number
+# of cores, print a warning and assume "1" core.
+function num_cores {
+  local cores=
+  if hash nproc &>/dev/null
+  then cores="$(nproc)"                                   # Linux based systems
+  else                                                            # OSX and BSD
+    if cores="$(sysctl -n hw.ncpu)"
+    then : # Do nothing, success
+    else
+      msg "Could not find nproc and sysctl failed; defaulting to 1 core."
+      cores=1
+    fi
+  fi
+  out "$cores"
+}
+
 function msg { out "$*" >&2 ;}
 function err { local x=$? ; msg "$*" ; return $(( $x == 0 ? 1 : $x )) ;}
 function out { printf '%s\n' "$*" ;}
@@ -285,4 +303,3 @@ else
   get_system_info
   main "$@"
 fi
-
