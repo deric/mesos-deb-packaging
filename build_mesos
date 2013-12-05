@@ -275,15 +275,15 @@ function url_split {
 # of cores, print a warning and assume "1" core.
 function num_cores {
   local cores=
-  if hash nproc 2>/dev/null; then
-    # Linux based systems
-    cores=$(nproc)
-  elif hash sysctl 2>/dev/null && [[ "$(os_release)" = "macosx/10" ]]; then
-    # OSX
-    cores=$(sysctl -n hw.ncpu)
-  else
-    err "Could not determine the number of cores, defaulting to 1 core."
-    cores=1
+  if hash nproc &>/dev/null
+  then cores="$(nproc)"                                   # Linux based systems
+  else                                                            # OSX and BSD
+    if cores="$(sysctl -n hw.ncpu)"
+    then : # Do nothing, success
+    else
+      msg "Could not find nproc and sysctl failed; defaulting to 1 core."
+      cores=1
+    fi
   fi
   out "$cores"
 }
