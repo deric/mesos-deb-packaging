@@ -35,6 +35,8 @@ go_daemon() {
     ${CGROUPS_HIERARCHY:+--cgroups_hierarchy=$CGROUPS_HIERARCHY} \
     ${CGROUPS_ROOT:+--cgroups_root=$CGROUPS_ROOT} \
     ${CGROUPS_SUBSYSTEMS:+--cgroups_subsystems=$CGROUPS_SUBSYSTEMS} \
+    ${RESOURCES:+--resources=$RESOURCES} \
+    ${CHECKPOINT:+--resources=$RESOURCES} \
     $OPTS \
     >> "$LOGS"/slave.log 2>&1
 }
@@ -116,5 +118,5 @@ case "$1" in
     exit 1
     ;;
 esac
- 
+
 exit 0

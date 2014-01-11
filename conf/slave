@@ -1,8 +1,13 @@
+#!/bin/sh
 # if zookeeper URL is not specified, slaves will connect directly
 # to specified master (not a fault-tolerant mode)
+# May be one of:
+#   zk://host1:port1,host2:port2,.../path
+#   zk://username:password@host1:port1,host2:port2,.../path
+#   file://path/to/file (where file contains one of the above)
+#
 #MASTER="zk://localhost:2181/mesos"
-# master could be specified by either by zookeer URL or directly with
-# an IP address of master
+# master could be also specified by an IP address of the master (not fault-tolerant)
 #MASTER="192.168.1.1"
 
 # slave's ip, must be unique in mesos cluster
@@ -19,6 +24,15 @@ WORKDIR="/tmp/mesos"
 # status updates and reconnect with (--recover=reconnect) or
 # kill (--recover=kill) old executors (default: false)
 CHECKPOINT=false
+
+# Whether to recover status updates and reconnect with old executors.
+#   Valid values for 'recover' are
+#     reconnect: Reconnect with any old live executors.
+#     cleanup  : Kill any old live executors and exit.
+#   Use this option when doing an incompatible slave or executor upgrade!).
+#   NOTE: If checkpointed slave doesn't exist, no recovery is performed
+# and the slave registers with the master as a new slave. (default: reconnect)
+RECOVER="reconnect"
 
 # Isolation mechanism, may be one of: process, cgroups (default: process)
 ISOLATION="process"
@@ -41,3 +55,16 @@ CGROUPS_SUBSYSTEMS="cpu,memory,freezer"
 #export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
 #export MESOS_HOME="/usr/local/lib/"
 
+# Limit resources offered by Mesos (it's not a good idea to offer 100% of
+# your resources)
+#
+# Total consumable resources per slave, in the form 'name(role):value;name(role):value...'.
+# NOTE: '(role)' is optional.
+# Ex: "cpus(role2):2;mem(role2):1024;cpus:1;mem:1024;disk:0"
+
+# To properly upgrade resources used by the slave do as follows:
+#  * Step 1: Start the slave with --recover=cleanup.
+#  * Step 2: Wait till the slave kills all executors and shuts down.
+#  * Step 3: Start the upgraded slave with --recover=reconnect.
+
+#RESOURCES="cpus:4;mem:2048"
