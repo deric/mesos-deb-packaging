@@ -190,7 +190,7 @@ function pkg {
 }
 
 function clean {
-  local build_dir = "$(pwd -P)/build"
+  local build_dir="$(pwd -P)/build"
   if [[ -d $build_dir ]]; then
     rm -rf $build_dir
   fi
