@@ -260,7 +260,7 @@ and iterative jobs), and other applications."
                --url=http://incubator.apache.org/mesos/
                -a "$arch"
                --category misc
-               --vendor ""
+               --vendor "Apache Mesos"
                -m mesos-dev@incubator.apache.org
                --prefix=/ )
   ( cd toor && "$gem_bin"/fpm "${opts[@]}" "$@" -- . )

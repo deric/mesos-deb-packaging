@@ -9,7 +9,12 @@ case "$1" in
       if [ -x /usr/sbin/invoke-rc.d ]; then
         invoke-rc.d mesos-master start
       else
-        /etc/init.d/mesos-master start
+        if [ -f /etc/init.d/mesos-master ]; then
+          update-rc.d mesos-master defaults
+          /etc/init.d/mesos-master start
+        else
+          service mesos-master start
+        fi
       fi
       rm /tmp/mesos-master-reload
     fi
@@ -18,12 +23,16 @@ case "$1" in
       if [ -x /usr/sbin/invoke-rc.d ]; then
         invoke-rc.d mesos-slave start
       else
-        /etc/init.d/mesos-slave start
+        if [ -f /etc/init.d/mesos-slave ]; then
+          update-rc.d mesos-slave defaults
+          /etc/init.d/mesos-slave start
+        else
+          service mesos-slave start
+        fi
       fi
       rm /tmp/mesos-slave-reload
     fi
-    update-rc.d mesos-master defaults
-    update-rc.d mesos-slave defaults
+
     ;;
 
   abort-upgrade|abort-remove|abort-deconfigure)
