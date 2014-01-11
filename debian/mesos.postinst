@@ -22,6 +22,8 @@ case "$1" in
       fi
       rm /tmp/mesos-slave-reload
     fi
+    update-rc.d mesos-master defaults
+    update-rc.d mesos-slave defaults
     ;;
 
   abort-upgrade|abort-remove|abort-deconfigure)

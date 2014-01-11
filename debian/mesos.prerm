@@ -6,7 +6,7 @@ case "$1" in
     if [ -f /var/run/mesos-master.pid ]; then
       if [ -x /usr/sbin/invoke-rc.d ]; then
         invoke-rc.d mesos-master stop
-      else   
+      else
         /etc/init.d/mesos-master stop
       fi
     fi
