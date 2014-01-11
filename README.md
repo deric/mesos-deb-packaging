@@ -2,6 +2,26 @@
 
 Mesos is a cluster manager that provides efficient resource isolation and sharing across distributed applications, or frameworks.  See [Mesos website](http://mesos.apache.org/) for more details.
 
+## Mesos configuration
+
+Mesos arguments could be specified by creating files structure in `/etc/mesos-slave` or in `/etc/mesos-master`.
+
+For specifing e.g. `--isolation=cgroups` you would create
+
+```
+  /etc
+    /mesos-slave
+      isolation       # with contents 'cgroups'
+```
+
+In similar manner you can restrict hardware resources used by mesos-slave:
+
+```
+  /etc
+    /mesos-slave
+      /resources
+        cpu          # with contents e.g. '5'
+```
 
 ## Building package
 
