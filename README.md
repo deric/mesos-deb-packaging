@@ -20,9 +20,13 @@ Build deb package for Debian/Ubuntu with following:
 
   * for Mesos >= 0.16
 
-```
-        libsasl2-dev
-```
+    ```
+    $ sudo apt-get install libsasl2-dev
+    ```
+
+## Puppet
+
+Package could be automatically configured by a [Puppet module](https://github.com/deric/puppet-mesos)
 
 ## TODO
 
