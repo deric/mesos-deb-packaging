@@ -218,8 +218,11 @@ function deb_ {
                --deb-recommends zookeeper-bin
                -d 'java7-runtime-headless | java6-runtime-headless'
                -d libcurl3
-               --after-install "$this/$scripts/mesos.postinst"
-               --after-remove "$this/$scripts/mesos.postrm" )
+               -d "libunwind7|libunwind8"
+               --before-install "$this/debian/mesos.preinst"
+               --after-install "$this/debian/mesos.postinst"
+               --before-remove "$this/debian/mesos.prerm"
+               --after-remove "$this/debian/mesos.postrm" )
   fpm_ "${opts[@]}" -p "$this"/pkg.deb
 }
 
