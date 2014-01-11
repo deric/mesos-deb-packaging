@@ -70,6 +70,7 @@ function slave {
   [[ ! ${IP:-} ]]        || args+=( --ip="$IP" )
   [[ ! ${LOGS:-} ]]      || args+=( --log_dir="$LOGS" )
   [[ ! ${ISOLATION:-} ]] || args+=( --isolation="$ISOLATION" )
+
   for f in "$etc_slave"/* # attributes ip resources isolation &al.
   do
     if [[ -f $f ]]
@@ -113,6 +114,7 @@ function master {
   [[ ! ${PORT:-} ]]    || args+=( --port="$PORT" )
   [[ ! ${CLUSTER:-} ]] || args+=( --cluster="$CLUSTER" )
   [[ ! ${LOGS:-} ]]    || args+=( --log_dir="$LOGS" )
+
   for f in "$etc_master"/* # cluster log_dir port &al.
   do
     if [[ -f $f ]]

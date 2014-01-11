@@ -140,7 +140,7 @@ function create_installation {(
   init_scripts "$linux"
   logrotate
   jars
-  chown -R 0:0 .
+  sudo chown -R 0:0 .
 )}
 
 function init_scripts {
