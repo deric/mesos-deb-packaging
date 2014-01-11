@@ -37,6 +37,7 @@ function main {
 }
 
 function go {
+  clean
   build
   create_installation
   pkg
@@ -186,6 +187,15 @@ function pkg {
     centos/*|redhat/*) rpm_ ;;
     *)                 err "Not sure how to package for: $linux" ;;
   esac
+}
+
+function clean {
+  for package in "$this/pkg.deb" "$this/pkg.rpm"; do
+    if [[ -f $package ]]; then
+      msg "removing old package $package"
+      rm $package
+    fi
+  done
 }
 
 function architecture {
