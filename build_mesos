@@ -137,6 +137,7 @@ function create_installation {(
   cp "$this"/default/mesos*     etc/default/
   echo zk://localhost:2181/mesos > etc/mesos/zk
   init_scripts "$linux"
+  logrotate
   jars
   chown -R 0:0 .
 )}
@@ -164,6 +165,19 @@ function init_scripts {
 function jars {
   mkdir -p usr/share/java/
   mv ../build/src/mesos-*.jar usr/share/java/
+}
+
+function logrotate {
+  case "$linux" in
+    ubuntu/*|debian/*)
+      mkdir -p etc/logrotate.d
+      cp "$this"/debian/logrotate etc/logrotate.d/mesos
+    ;;
+    centos/*|redhat/*)
+      err "not implemented yet"
+    ;;
+    *) err "Not sure how to configure logrotate for: $linux" ;;
+  esac
 }
 
 function pkg {
