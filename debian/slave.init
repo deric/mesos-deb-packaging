@@ -21,24 +21,52 @@ test -x $DAEMON || exit 0
 
 PIDFILE=/var/run/mesos-slave.pid
 
-    ${IP:+--ip=$IP} \
-    ${PORT:+--port=$PORT} \
-    ${WORKDIR:+--work_dir=$WORKDIR} \
-    ${ISOLATION:+--isolation=$ISOLATION} \
-    ${CGROUPS_HIERARCHY:+--cgroups_hierarchy=$CGROUPS_HIERARCHY} \
-    ${CGROUPS_ROOT:+--cgroups_root=$CGROUPS_ROOT} \
-    ${CGROUPS_SUBSYSTEMS:+--cgroups_subsystems=$CGROUPS_SUBSYSTEMS} \
-    ${RESOURCES:+--resources=$RESOURCES} \
-    ${CHECKPOINT:+--resources=$RESOURCES} \
-    $OPTS \
-start() {
+start_mesos() {
   start-stop-daemon --start --background --quiet \
                     --pidfile "$PID" --make-pidfile \
                     --exec /usr/bin/mesos-init-wrapper -- slave
 }
 
-stop() {
+stop_mesos() {
   start-stop-daemon --stop --quiet --pidfile "$PIDFILE"
+}
+
+status_mesos() {
+    if (type status_of_proc > /dev/null 2>&1) ; then
+        status_of_proc -p "${PIDFILE}" "${DAEMON}" "${NAME}" && exit 0 || exit $?
+    else
+        status_of_proc() {
+            local pidfile daemon name status
+
+            pidfile=
+            OPTIND=1
+            while getopts p: opt ; do
+                case "$opt" in
+                    p)  pidfile="$OPTARG";;
+                esac
+            done
+            shift $(($OPTIND - 1))
+
+            if [ -n "$pidfile" ]; then
+                pidfile="-p $pidfile"
+            fi
+            daemon="$1"
+            name="$2"
+            status="0"
+            pidofproc $pidfile $daemon >/dev/null || status="$?"
+            if [ "$status" = 0 ]; then
+                log_success_msg "$name is running"
+                return 0
+            elif [ "$status" = 4 ]; then
+                log_failure_msg "could not access PID file for $name"
+                return $status
+            else
+                log_failure_msg "$name is not running"
+                return $status
+            fi
+        }
+        status_of_proc -p "${PIDFILE}" "${DAEMON}" "${NAME}" && exit 0 || exit $?
+    fi
 }
 
 case "$1" in
