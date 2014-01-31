@@ -112,6 +112,7 @@ function master {
   [[ ! ${ULIMIT:-} ]]  || ulimit $ULIMIT
   [[ ! ${ZK:-} ]]      || args+=( --zk="$ZK" )
   [[ ! ${PORT:-} ]]    || args+=( --port="$PORT" )
+  [[ ! ${IP:-} ]]      || args+=( --ip="$IP" )
   [[ ! ${CLUSTER:-} ]] || args+=( --cluster="$CLUSTER" )
   [[ ! ${LOGS:-} ]]    || args+=( --log_dir="$LOGS" )
 
