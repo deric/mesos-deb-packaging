@@ -14,6 +14,8 @@
 NAME="mesos-slave"
 DESC="mesos slave"
 
+DAEMON=/usr/local/sbin/mesos-slave
+
 # if configuration files remain but the package has been removed
 test -x $DAEMON || exit 0
 
@@ -23,7 +25,7 @@ PIDFILE=/var/run/mesos-slave.pid
 
 start_mesos() {
   start-stop-daemon --start --background --quiet \
-                    --pidfile "$PID" --make-pidfile \
+                    --pidfile "$PIDFILE" --make-pidfile \
                     --exec /usr/bin/mesos-init-wrapper -- slave
 }
 
@@ -72,19 +74,19 @@ status_mesos() {
 case "$1" in
   start)
     log_daemon_msg "Starting $DESC" "$NAME"
-    start
+    start_mesos
     log_end_msg $?
     ;;
   stop)
     log_daemon_msg "Stopping $DESC" "$NAME"
-    stop
+    stop_mesos
     log_end_msg $?
    ;;
   restart|force-reload)
     log_daemon_msg "Restarting $DESC" "$NAME"
-    stop
+    stop_mesos
     sleep 1
-    start
+    start_mesos
     log_end_msg $?
     ;;
   status)

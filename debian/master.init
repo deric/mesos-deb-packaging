@@ -24,12 +24,12 @@ PIDFILE=/var/run/mesos-master.pid
 
 start_mesos() {
   start-stop-daemon --start --background --quiet \
-                    --pidfile "$PID" --make-pidfile \
+                    --pidfile "$PIDFILE" --make-pidfile \
                     --exec /usr/bin/mesos-init-wrapper -- master
 }
 
 stop_mesos() {
-  start-stop-daemon --stop --quiet --pidfile "$PID"
+  start-stop-daemon --stop --quiet --pidfile "$PIDFILE"
 }
 
 status_mesos() {
