@@ -110,6 +110,7 @@ function master {
   [[ ! -f /etc/default/mesos-master ]] || . /etc/default/mesos-master
   [[ ! ${ULIMIT:-} ]]  || ulimit $ULIMIT
   [[ ! ${ZK:-} ]]      || args+=( --zk="$ZK" )
+  [[ ! ${IP:-} ]]      || args+=( --ip="$IP" )
   [[ ! ${PORT:-} ]]    || args+=( --port="$PORT" )
   [[ ! ${CLUSTER:-} ]] || args+=( --cluster="$CLUSTER" )
   [[ ! ${LOGS:-} ]]    || args+=( --log_dir="$LOGS" )
