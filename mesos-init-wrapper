@@ -99,7 +99,6 @@ function slave {
     local formatted="$(printf ';%s' "${resources[@]}")"
     args+=( --resources="${formatted:1}" )         # NB: Leading ';' is clipped
   fi
-  ( logged /usr/local/sbin/mesos-slave --master="$MASTER" --recover=cleanup )
   logged /usr/local/sbin/mesos-slave "${args[@]}"
 }
 
