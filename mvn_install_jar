@@ -1,0 +1,2 @@
+#!/bin/bash
+mvn install:install-file -Dfile=/var/packages/mesos/deb/usr/share/java/mesos-0.16.0.jar -DgroupId=org.apache.mesos -DartifactId=mesos -Dversion=0.16.0 -Dpackaging=jar

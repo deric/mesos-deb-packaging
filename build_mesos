@@ -130,6 +130,9 @@ function display_version {
 
 function create_installation {(
   local pwd="$(pwd -P)"
+  if [ -d toor ]; then
+    rm -rf toor
+  fi
   mkdir -p toor
   ( cd build && make install DESTDIR="$pwd"/toor )
   cd toor
@@ -192,6 +195,7 @@ function pkg {
 function clean {
   local build_dir="$(pwd -P)/build"
   if [[ -d $build_dir ]]; then
+    msg "removing build directory..."
     rm -rf $build_dir
   fi
   for package in "$this/pkg.deb" "$this/pkg.rpm"; do
