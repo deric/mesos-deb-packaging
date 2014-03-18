@@ -75,7 +75,7 @@ function build {(
   ./bootstrap
   mkdir -p build
   cd build
-  ../configure
+  ../configure $(configure_opts)
   # optimal number of build jobs is 2x num_cores
   make -j $(($(num_cores)*2))
 )}
@@ -286,6 +286,15 @@ function num_cores {
     fi
   fi
   out "$cores"
+}
+
+# Return Mesos configuration options
+function configure_opts {
+  local options=
+  if [[ "$version" == 0.18.0-rc4 ]] || [[ "$repo" =~ 0\.18\.0-rc4$ ]]
+  then options="--without-cxx11"                # See: MESOS-750 and MESOS-1095
+  fi
+  out "$options"
 }
 
 function msg { out "$*" >&2 ;}
