@@ -7,4 +7,4 @@ description "mesos slave"
 start on stopped rc RUNLEVEL=[2345]
 respawn
 
-exec /usr/bin/mesos-init-wrapper slave
+exec start-stop-daemon --start --make-pidfile --pidfile /var/run/mesos-slave.pid --exec /usr/bin/mesos-init-wrapper slave

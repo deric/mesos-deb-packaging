@@ -7,5 +7,4 @@ description "mesos master"
 start on stopped rc RUNLEVEL=[2345]
 respawn
 
-exec /usr/bin/mesos-init-wrapper master
-
+exec start-stop-daemon --start --make-pidfile --pidfile /var/run/mesos-master.pid --exec /usr/bin/mesos-init-wrapper master
