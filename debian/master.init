@@ -23,8 +23,10 @@ test -x $DAEMON || exit 0
 PIDFILE=/var/run/mesos-master.pid
 
 start_mesos() {
+  MASTER_OPTS=$(/usr/bin/mesos-init-wrapper master)
   start-stop-daemon --start --background --quiet \
                     --pidfile "$PIDFILE" --make-pidfile \
+                    --exec $DAEMON -- exec ${MASTER_OPTS}
                     --exec /usr/bin/mesos-init-wrapper -- master
 }
 

@@ -24,9 +24,10 @@ test -x $DAEMON || exit 0
 PIDFILE=/var/run/mesos-slave.pid
 
 start_mesos() {
+  SLAVE_OPTS=$(/usr/bin/mesos-init-wrapper slave)
   start-stop-daemon --start --background --quiet \
                     --pidfile "$PIDFILE" --make-pidfile \
-                    --exec /usr/bin/mesos-init-wrapper -- slave
+                    --exec $DAEMON -- exec ${SLAVE_OPTS}
 }
 
 stop_mesos() {

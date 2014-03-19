@@ -104,7 +104,8 @@ function slave {
   if [ "$USE_SYSLOG" = true ] ; then
     logged "${slave_bin} ${args[@]}"
   else
-    "${slave_bin} ${args[@]}" >> ${LOGS}/slave.log 2>&1
+    # command for running slave
+    echo "${slave_bin} ${args[@]} >> ${LOGS}/slave.log 2>&1"
   fi
 }
 
@@ -135,7 +136,7 @@ function master {
   if [ "$USE_SYSLOG" = true ] ; then
     logged /usr/local/sbin/mesos-master "${args[@]}"
   else
-    "${master_bin} ${args[@]}" >> ${LOGS}/master.log 2>&1
+    echo "${master_bin} ${args[@]} >> ${LOGS}/master.log 2>&1"
   fi
 }
 
