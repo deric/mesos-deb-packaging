@@ -1,0 +1,27 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+  configure)
+    python_path=$(ls /usr/local/lib/python2.7/dist-packages/*.egg)
+    if [ -f "${python_path}" ]; then
+      easy_install $python_path
+    else
+      echo "could not find python egg at: $python_path"
+    fi
+
+    ;;
+
+  abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+  *)
+    echo "postinst called with unknown argument \`$1'" >&2
+    exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
+

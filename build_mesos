@@ -41,7 +41,6 @@ function go {
   build
   create_installation
   pkg
-  save_python_egg
 }
 
 use_git_version=false
@@ -68,6 +67,7 @@ function checkout {
   then msg "Found directory \`mesos-repo'; skipping checkout."
   else msg "Cloning: $repository at $ref" && git clone "$repository" mesos-repo
   fi
+  repodir="${this}/mesos-repo"
   ( cd mesos-repo && ( [[ ! ${ref:-} ]] || git checkout -f "$ref" ) && "$@" )
 }
 
@@ -134,8 +134,9 @@ function create_installation {(
     rm -rf toor
   fi
   mkdir -p toor
+  debroot="${pwd}/toor"
   ( cd build && make install DESTDIR="$pwd"/toor )
-  cd toor
+  cd ${debroot}
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   cp ../CHANGELOG               usr/share/doc/mesos/
   cp "$this"/default/mesos*     etc/default/
@@ -143,6 +144,7 @@ function create_installation {(
   init_scripts "$linux"
   logrotate
   jars
+  save_python_egg
   sudo chown -R 0:0 .
 )}
 
@@ -198,7 +200,7 @@ function clean {
     msg "removing build directory..."
     rm -rf $build_dir
   fi
-  for package in "$this/pkg.deb" "$this/pkg.rpm"; do
+  for package in "$this/pkg.deb" "$this/pkg.rpm" "$this/python-mesos.deb"; do
     if [[ -f $package ]]; then
       msg "removing old package $package"
       rm $package
@@ -272,8 +274,52 @@ and iterative jobs), and other applications."
 }
 
 function save_python_egg {
-  local eggs=( build/src/python/dist/*.egg )
-  cat "${eggs[@]}" > "$this"/mesos.egg
+  local egg_path="${repodir}/build/src/python/dist/*.egg"
+  msg "python egg: ${egg_path}"
+  local python_path=$(ls ${egg_path})
+  if [ ! -f $python_path ]; then
+    err "file ${python_path} does not exist"
+  fi
+  pyroot="${pwd}/python"
+  local pydest="${pyroot}/usr/local/lib/python2.7/dist-packages"
+  mkdir -p $pydest
+  mv $python_path $pydest
+  msg "python copied to: ${pydest}"
+  sudo chown -R 0:0 ${pydest}
+  case "$linux" in
+    ubuntu/*|debian/*)
+      local scripts="${linux%%/*}"
+      local opts=( -t deb
+               -d 'python'
+               -d 'python-setuptools'
+               --after-install "$this/debian/python.postinst"
+               )
+      python_pkg_ "${opts[@]}" -p "$this"/python-mesos.deb
+      ;;
+    *)                 err "Not sure how to package for: $linux" ;;
+  esac
+  cd $pwd
+}
+
+function python_pkg_ {
+  local version="$(maybe_append_git_hash "$version")"
+  local opts=( -s dir
+               -n "python-mesos"
+               -v "$version"
+               --description
+"Cluster resouce manager with efficient resource isolation
+Apache Mesos is a cluster manager that offers efficient resource isolation
+and sharing across distributed applications, or frameworks. It can run
+Hadoop, MPI, Hypertable, Spark (a new framework for low-latency interactive
+and iterative jobs), and other applications."
+               --url=http://incubator.apache.org/mesos/
+               -a "$arch"
+               --category misc
+               --vendor "Apache Mesos"
+               -m mesos-dev@incubator.apache.org
+               --prefix=/ )
+  ( cd $pyroot && "$gem_bin"/fpm "${opts[@]}" "$@" -- . )
+
 }
 
 function upload {

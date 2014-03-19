@@ -1,3 +1,6 @@
 mesos/*
 mesos*.deb
 dist.tgz
+mesos.egg
+*.deb
+mesos-repo/*
