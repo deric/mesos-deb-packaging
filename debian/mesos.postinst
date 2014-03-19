@@ -13,7 +13,9 @@ case "$1" in
           update-rc.d mesos-master defaults
           /etc/init.d/mesos-master start
         else
-          service mesos-master start
+          if [ -f /etc/init/mesos-master.conf ]; then
+            service mesos-master start
+          fi
         fi
       fi
       rm /tmp/mesos-master-reload
@@ -27,7 +29,9 @@ case "$1" in
           update-rc.d mesos-slave defaults
           /etc/init.d/mesos-slave start
         else
-          service mesos-slave start
+          if [ -f /etc/init/mesos-slave.conf ]; then
+            service mesos-slave start
+          fi
         fi
       fi
       rm /tmp/mesos-slave-reload

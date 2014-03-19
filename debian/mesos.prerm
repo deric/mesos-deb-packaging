@@ -7,7 +7,13 @@ case "$1" in
       if [ -x /usr/sbin/invoke-rc.d ]; then
         invoke-rc.d mesos-master stop
       else
-        /etc/init.d/mesos-master stop
+        if [ -f /etc/init.d/mesos-master ]; then
+          /etc/init.d/mesos-master stop
+        else
+          if [ -f /etc/init/mesos-master.conf ]; then
+            service mesos-master stop
+          fi
+        fi
       fi
     fi
 
@@ -15,7 +21,13 @@ case "$1" in
       if [ -x /usr/sbin/invoke-rc.d ]; then
         invoke-rc.d mesos-slave stop
       else
-        /etc/init.d/mesos-slave stop
+        if [ -f /etc/init.d/mesos-slave ]; then
+          /etc/init.d/mesos-slave stop
+        else
+          if [ -f /etc/init/mesos-slave.conf ]; then
+            service mesos-slave stop
+          fi
+        fi
       fi
     fi
     ;;
