@@ -59,7 +59,8 @@ function main {
 }
 
 function slave {
-  local etc_slave=/etc/mesos-slave
+  local etc_slave="/etc/mesos-slave"
+  local slave_bin="/usr/local/sbin/mesos-slave"
   local args=()
   local attributes=()
   local resources=()
@@ -101,14 +102,15 @@ function slave {
     args+=( --resources="${formatted:1}" )         # NB: Leading ';' is clipped
   fi
   if [ "$USE_SYSLOG" = true ] ; then
-    logged /usr/local/sbin/mesos-slave "${args[@]}"
+    logged "${slave_bin} ${args[@]}"
   else
-    daemonize /usr/local/sbin/mesos-slave "${args[@]}"
+    "${slave_bin} ${args[@]}" >> ${LOGS}/slave.log 2>&1
   fi
 }
 
 function master {
   local etc_master=/etc/mesos-master
+  local master_bin="/usr/local/sbin/mesos-master"
   local args=()
   [[ ! -f /etc/default/mesos ]]        || . /etc/default/mesos
   [[ ! -f /etc/default/mesos-master ]] || . /etc/default/mesos-master
@@ -133,7 +135,7 @@ function master {
   if [ "$USE_SYSLOG" = true ] ; then
     logged /usr/local/sbin/mesos-master "${args[@]}"
   else
-    daemonize /usr/local/sbin/mesos-master "${args[@]}"
+    "${master_bin} ${args[@]}" >> ${LOGS}/master.log 2>&1
   fi
 }
 
@@ -143,10 +145,6 @@ function logged {
   exec 1> >(exec logger -p user.info -t "$tag")
   exec 2> >(exec logger -p user.err  -t "$tag")
   exec "$@"
-}
-
-function daemonize {
-  ${1} -- "${args[@]}" >> /var/log/mesos/slave.log 2>&1
 }
 
 function msg { out "$*" >&2 ;}
