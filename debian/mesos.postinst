@@ -3,36 +3,24 @@ set -e
 
 case "$1" in
   configure)
-    #update paths to libraries
+    #update paths to libmesos.so
     ldconfig
     if [ -f /tmp/mesos-master-reload ]; then
-      if [ -x /usr/sbin/invoke-rc.d ]; then
-        invoke-rc.d mesos-master start
-      else
-        if [ -f /etc/init.d/mesos-master ]; then
-          update-rc.d mesos-master defaults
-          /etc/init.d/mesos-master start
-        else
-          if [ -f /etc/init/mesos-master.conf ]; then
-            service mesos-master start
-          fi
-        fi
+      if [ -x /etc/init.d/mesos-master ]; then
+        update-rc.d mesos-master defaults
+        /etc/init.d/mesos-master start
+      elif [ -f /etc/init/mesos-master.conf ]; then
+        service mesos-master start
       fi
       rm /tmp/mesos-master-reload
     fi
 
     if [ -f /tmp/mesos-slave-reload ]; then
-      if [ -x /usr/sbin/invoke-rc.d ]; then
-        invoke-rc.d mesos-slave start
-      else
-        if [ -f /etc/init.d/mesos-slave ]; then
-          update-rc.d mesos-slave defaults
-          /etc/init.d/mesos-slave start
-        else
-          if [ -f /etc/init/mesos-slave.conf ]; then
-            service mesos-slave start
-          fi
-        fi
+      if [ -x /etc/init.d/mesos-slave ]; then
+        update-rc.d mesos-slave defaults
+        /etc/init.d/mesos-slave start
+      elif [ -f /etc/init/mesos-slave.conf ]; then
+        service mesos-slave start
       fi
       rm /tmp/mesos-slave-reload
     fi
