@@ -231,6 +231,7 @@ and iterative jobs), and other applications."
                --category misc
                --vendor ""
                -m mesos-dev@incubator.apache.org
+               --config-files etc/
                --prefix=/ )
   ( cd toor && "$gem_bin"/fpm "${opts[@]}" "$@" -- . )
 }
