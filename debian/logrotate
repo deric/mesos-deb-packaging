@@ -1,7 +1,7 @@
-/var/log/mesos/*.log {
+/var/log/mesos/* {
 	daily
 	missingok
-	rotate 20
+	rotate 30
 	compress
 	delaycompress
 	notifempty
