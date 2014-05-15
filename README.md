@@ -31,18 +31,17 @@ Build deb package for Debian/Ubuntu with following:
 
 ### Requirements
 
+  * you'll definitely need >1GB RAM for compilation
   * Ruby (build scripts uses [FPM](https://github.com/jordansissel/fpm))
 
     ```
     $ gem install fpm
-    $ sudo apt-get install python-dev autoconf automake git make libssl-dev libcurl3
+    $ sudo apt-get install build-essential python-dev autoconf automake git make libssl-dev libcurl4-nss-dev libtool libsasl2-dev
     ```
+  * Java support
+    * e.g. `openjdk-7-jre-headless`, `openjdk-7-jdk` ,`maven`
 
-  * for Mesos >= 0.16
-
-    ```
-    $ sudo apt-get install libsasl2-dev
-    ```
+  * for Mesos < 0.14 you'll not need `libsasl2-dev`
 
 ## Puppet
 
