@@ -163,7 +163,10 @@ function init_scripts {
 
 function jars {
   mkdir -p usr/share/java/
-  mv ../build/src/mesos-*.jar usr/share/java/
+  if [[ -d ../build/src/java/target ]]
+  then mv ../build/src/java/target/mesos-*.jar usr/share/java # Mesos >= 0.18.1
+  else mv ../build/src/mesos-*.jar usr/share/java             # Mesos <  0.18.1
+  fi
 }
 
 function pkg {
