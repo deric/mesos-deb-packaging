@@ -31,7 +31,8 @@ Build deb package for Debian/Ubuntu with following:
 
 ### Requirements
 
-  * you'll definitely need >1GB RAM for compilation
+  * you'll definitely need ~2GB RAM for compilation
+    * if fact due to `make -j $(($(num_cores)*2))` you need cca 2GB per core
   * Ruby (build scripts uses [FPM](https://github.com/jordansissel/fpm))
 
     ```
