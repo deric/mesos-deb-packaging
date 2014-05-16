@@ -23,6 +23,7 @@ USAGE
 this="$(cd "$(dirname "$0")" && pwd -P)"
 name=mesos
 version="${version:-9999}"
+use_sudo=false
 
 function main {
   while [[ $# -gt 0 ]]
@@ -30,6 +31,7 @@ function main {
     case "$1" in                                      # Munging globals, beware
       --repo)                   repo="$2"    ; shift 2 ;;
       --nominal-version)        version="$2" ; shift 2 ;;
+      --use-sudo)               use_sudo=true; shift 1 ;;
       *)                        err 'Argument error. Please see help.' ;;
     esac
   done
@@ -145,7 +147,11 @@ function create_installation {(
   logrotate
   jars
   save_python_egg
-  sudo chown -R 0:0 .
+  if [[ $use_sudo = true ]]; then
+    sudo chown -R 0:0 .
+  else
+    chown -R 0:0 .
+  fi
 )}
 
 function init_scripts {
@@ -170,9 +176,10 @@ function init_scripts {
 
 function jars {
   mkdir -p usr/share/java/
-  local jarfile=$(ls ../build/src/java/target/mesos-*.jar)
+  # we don't want copy java docs..
+  local jarfile="$(ls ../build/src/java/target/mesos-*[0-9*].jar)"
   if [[ -f "$jarfile" ]]; then
-    mv ../build/src/java/target/mesos-*.jar usr/share/java/
+    cp "$jarfile" usr/share/java/
   else
     err "${jarfile} was not found"
   fi
@@ -290,7 +297,11 @@ function save_python_egg {
   mkdir -p $pydest
   mv $python_path $pydest
   msg "python copied to: ${pydest}"
-  sudo chown -R 0:0 ${pydest}
+  if [[ $use_sudo = true ]]; then
+    sudo chown -R 0:0 ${pydest}
+  else
+    chown -R 0:0 ${pydest}
+  fi
   case "$linux" in
     ubuntu/*|debian/*)
       local scripts="${linux%%/*}"
