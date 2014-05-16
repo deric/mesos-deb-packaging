@@ -170,7 +170,12 @@ function init_scripts {
 
 function jars {
   mkdir -p usr/share/java/
-  mv ../build/src/mesos-*.jar usr/share/java/
+  local jarfile=$(ls ../build/src/java/target/mesos-*.jar)
+  if [ -f $jarfile ]; then
+    mv ../build/src/java/target/mesos-*.jar usr/share/java/
+  else
+    err "${jarfile} was not found"
+  fi
 }
 
 function logrotate {
