@@ -9,42 +9,13 @@
 #MASTER="zk://localhost:2181/mesos"
 # master could be also specified by an IP address of the master (not fault-tolerant)
 #MASTER="192.168.1.1"
+MASTER=`cat /etc/mesos/zk`
 
 # slave's ip, must be unique in mesos cluster
 IP=""
 
 # Port to listen on (default: 5051)
 PORT=5051
-
-# Where to place framework work directories (default: /tmp/mesos)
-WORKDIR="/tmp/mesos"
-
-# Whether to checkpoint slave and frameworks information
-# to disk. This enables a restarted slave to recover
-# status updates and reconnect with (--recover=reconnect) or
-# kill (--recover=kill) old executors (default: false)
-CHECKPOINT=false
-
-# Whether to recover status updates and reconnect with old executors.
-#   Valid values for 'recover' are
-#     reconnect: Reconnect with any old live executors.
-#     cleanup  : Kill any old live executors and exit.
-#   Use this option when doing an incompatible slave or executor upgrade!).
-#   NOTE: If checkpointed slave doesn't exist, no recovery is performed
-# and the slave registers with the master as a new slave. (default: reconnect)
-RECOVER="reconnect"
-
-# Isolation mechanism, may be one of: process, cgroups (default: process)
-ISOLATION="process"
-
-# The path to the cgroups hierarchy root
-CGROUPS_HIERARCHY="/cgroups"
-# Name of the root cgroup
-CGROUPS_ROOT="mesos"
-# List of subsystems to enable (e.g., 'cpu,freezer')
-CGROUPS_SUBSYSTEMS="cpu,memory,freezer"
-
-#OPTS="--hadoop_home=/usr/lib/hadoop-0.20/"
 
 # alternative is to use MESOS_<option> as an envar
 # option list is available with /usr/sbin/mesos-slave --help
@@ -55,16 +26,4 @@ CGROUPS_SUBSYSTEMS="cpu,memory,freezer"
 #export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
 #export MESOS_HOME="/usr/local/lib/"
 
-# Limit resources offered by Mesos (it's not a good idea to offer 100% of
-# your resources)
-#
-# Total consumable resources per slave, in the form 'name(role):value;name(role):value...'.
-# NOTE: '(role)' is optional.
-# Ex: "cpus(role2):2;mem(role2):1024;cpus:1;mem:1024;disk:0"
 
-# To properly upgrade resources used by the slave do as follows:
-#  * Step 1: Start the slave with --recover=cleanup.
-#  * Step 2: Wait till the slave kills all executors and shuts down.
-#  * Step 3: Start the upgraded slave with --recover=reconnect.
-
-#RESOURCES="cpus:4;mem:2048"

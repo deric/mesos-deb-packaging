@@ -142,6 +142,7 @@ function create_installation {(
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   cp ../CHANGELOG               usr/share/doc/mesos/
   cp "$this"/default/mesos*     etc/default/
+  cp "$this"/conf/*  etc/mesos/
   echo zk://localhost:2181/mesos > etc/mesos/zk
   init_scripts "$linux"
   logrotate

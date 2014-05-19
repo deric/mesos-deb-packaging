@@ -1,5 +1,5 @@
 # ZooKeeper URL (used for leader election amongst masters)
-#ZK=zk://localhost:2181/mesos
+ZK=`cat /etc/mesos/zk`
 
 # Human readable name for the cluster, displayed in the webui
 CLUSTER="mesos"
