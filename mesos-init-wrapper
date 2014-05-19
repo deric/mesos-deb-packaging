@@ -19,8 +19,8 @@ cat <<USAGE
     files under /etc/default/:
 
       /etc/default/mesos          # For both slave and master.
-      /etc/mesos/master           # For the master only.
-      /etc/mesos/slave            # For the slave only.
+      /etc/default/mesos-master   # For the master only.
+      /etc/default/mesos-slave    # For the slave only.
 
  *  To set command line options for the slave or master, you can create files
     under certain directories:
@@ -65,7 +65,7 @@ function slave {
   local attributes=()
   local resources=()
   [[ ! -f /etc/default/mesos ]]       || . /etc/default/mesos
-  [[ ! -f /etc/mesos/slave ]]         || . /etc/mesos/slave
+  [[ ! -f /etc/default/mesos-slave ]] || . /etc/default/mesos-slave
   [[ ! ${ULIMIT:-} ]]    || ulimit $ULIMIT
   [[ ! ${MASTER:-} ]]    || args+=( --master="$MASTER" )
   [[ ! ${IP:-} ]]        || args+=( --ip="$IP" )
@@ -114,7 +114,7 @@ function master {
   local master_bin="/usr/local/sbin/mesos-master"
   local args=()
   [[ ! -f /etc/default/mesos ]]        || . /etc/default/mesos
-  [[ ! -f /etc/mesos/master ]]         || . /etc/mesos/master
+  [[ ! -f /etc/default/mesos-master ]] || . /etc/default/mesos-master
   [[ ! ${ULIMIT:-} ]]  || ulimit $ULIMIT
   [[ ! ${ZK:-} ]]      || args+=( --zk="$ZK" )
   [[ ! ${PORT:-} ]]    || args+=( --port="$PORT" )
