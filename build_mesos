@@ -237,7 +237,7 @@ function deb_ {
   local opts=( -t deb
                -d 'java7-runtime-headless | java6-runtime-headless'
                -d libcurl3
-               -d "libcurl-dev"
+               -d "libcurl4-nss-dev"
                -d "libunwind7|libunwind8"
                --before-install "$this/debian/mesos.preinst"
                --after-install "$this/debian/mesos.postinst"
