@@ -235,9 +235,6 @@ function find_gem_bin {
 function deb_ {
   local scripts="${linux%%/*}"
   local opts=( -t deb
-               --deb-recommends zookeeper
-               --deb-recommends zookeeperd
-               --deb-recommends zookeeper-bin
                -d 'java7-runtime-headless | java6-runtime-headless'
                -d libcurl3
                -d "libcurl-dev"
