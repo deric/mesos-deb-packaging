@@ -242,7 +242,12 @@ function deb_ {
                --before-install "$this/debian/mesos.preinst"
                --after-install "$this/debian/mesos.postinst"
                --before-remove "$this/debian/mesos.prerm"
-               --after-remove "$this/debian/mesos.postrm" )
+               --after-remove "$this/debian/mesos.postrm"
+               --config-files "${debroot}/etc/default/mesos"
+               --config-files "${debroot}/etc/default/mesos-master"
+               --config-files "${debroot}/etc/default/mesos-slave"
+               --config-files "${debroot}/etc/mesos/zk"
+                )
   fpm_ "${opts[@]}" -p "$this"/pkg.deb
 }
 
