@@ -230,6 +230,7 @@ and sharing across distributed applications, or frameworks. It can run
 Hadoop, MPI, Hypertable, Spark (a new framework for low-latency interactive
 and iterative jobs), and other applications."
                --url=http://incubator.apache.org/mesos/
+               --license Apache-2.0
                -a "$arch"
                --category misc
                --vendor ""
