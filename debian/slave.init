@@ -27,7 +27,7 @@ start_mesos() {
   SLAVE_OPTS=$(/usr/bin/mesos-init-wrapper slave)
   start-stop-daemon --start --background --quiet \
                     --pidfile "$PIDFILE" --make-pidfile \
-                    --exec $DAEMON -- ${SLAVE_OPTS}
+                    --exec /bin/bash -- -c "exec $DAEMON $SLAVE_OPTS"
 }
 
 stop_mesos() {
