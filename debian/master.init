@@ -26,7 +26,7 @@ start_mesos() {
   MASTER_OPTS=$(/usr/bin/mesos-init-wrapper master)
   start-stop-daemon --start --background --quiet \
                     --pidfile "$PIDFILE" --make-pidfile \
-                    --exec /bin/bash -- -c "exec $DAEMON $MASTER_OPTS"
+                    --startas /bin/bash -- -c "exec $DAEMON $MASTER_OPTS"
 }
 
 stop_mesos() {
