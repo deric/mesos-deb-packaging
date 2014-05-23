@@ -1,3 +1,6 @@
 tmp
 mesos*.deb
 dist.tgz
+*.rpm
+*.egg
+mesos-repo

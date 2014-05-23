@@ -121,7 +121,7 @@ function os_release {
 function display_version {
   local os="$( tr A-Z a-z <<<"$1" )" version="$( tr A-Z a-z <<<"$2" )"
   case "$os" in
-    redhat|centos|debian) out "$os/${version%%.*}" ;;   # Ignore minor versions
+    redhat|centos|debian|fedora) out "$os/${version%%.*}" ;;   # Ignore minor versions
     macosx)               out "$os/${version%.*}" ;;  # Ignore bug fix releases
     *)                    out "$os/$version" ;;
   esac
@@ -157,6 +157,10 @@ function init_scripts {
       mkdir -p etc/init
       cp "$this"/ubuntu/master.upstart etc/init/mesos-master.conf
       cp "$this"/ubuntu/slave.upstart etc/init/mesos-slave.conf ;;
+    fedora/*)
+      mkdir -p usr/lib/systemd/system
+      cp "$this"/fedora/master.systemd usr/lib/systemd/system/mesos-master.service
+      cp "$this"/fedora/slave.systemd usr/lib/systemd/system/mesos-master.service ;;
     *) err "Not sure how to make init scripts for: $1" ;;
   esac
 }
@@ -172,7 +176,7 @@ function jars {
 function pkg {
   case "$linux" in
     ubuntu/*|debian/*) deb_ ;;
-    centos/*|redhat/*) rpm_ ;;
+    centos/*|redhat/*|fedora/*) rpm_ ;;
     *)                 err "Not sure how to package for: $linux" ;;
   esac
 }
@@ -180,7 +184,7 @@ function pkg {
 function architecture {
   case "$linux" in
     ubuntu/*|debian/*) dpkg-architecture -qDEB_BUILD_ARCH ;;
-    centos/*|redhat/*) arch ;;
+    centos/*|redhat/*|fedora/*) arch ;;
     *)                 err "Not sure how to determine arch for: $linux" ;;
   esac
 }
