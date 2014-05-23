@@ -1,3 +1,4 @@
+#!/bin/sh
 # enables mesos logging, otherwise stdout goes to LOG_DIR
 #LOGS=/var/log/mesos
 # both master and slave will log into syslog file

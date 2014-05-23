@@ -1,3 +1,4 @@
+#!/bin/sh
 # ZooKeeper URL (used for leader election amongst masters)
 ZK=`cat /etc/mesos/zk`
 
@@ -8,6 +9,9 @@ CLUSTER="mesos"
 # IP address to listen on (in case that you start master
 # on this node, it will bind to this address)
 #IP="192.168.1.1"
+
+# The hostname the master should report
+#HOSTNAME=""
 
 # Port to listen on (default: 5050)
 PORT=5050

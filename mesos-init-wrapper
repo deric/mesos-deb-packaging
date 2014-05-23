@@ -69,6 +69,7 @@ function slave {
   [[ ! ${ULIMIT:-} ]]    || ulimit $ULIMIT
   [[ ! ${MASTER:-} ]]    || args+=( --master="$MASTER" )
   [[ ! ${IP:-} ]]        || args+=( --ip="$IP" )
+  [[ ! ${HOSTNAME:-} ]]  || args+=( --hostname="$HOSTNAME" )
   [[ ! ${LOGS:-} ]]      || args+=( --log_dir="$LOGS" )
   [[ ! ${ISOLATION:-} ]] || args+=( --isolation="$ISOLATION" )
 
@@ -115,12 +116,13 @@ function master {
   local args=()
   [[ ! -f /etc/default/mesos ]]        || . /etc/default/mesos
   [[ ! -f /etc/default/mesos-master ]] || . /etc/default/mesos-master
-  [[ ! ${ULIMIT:-} ]]  || ulimit $ULIMIT
-  [[ ! ${ZK:-} ]]      || args+=( --zk="$ZK" )
-  [[ ! ${PORT:-} ]]    || args+=( --port="$PORT" )
-  [[ ! ${IP:-} ]]      || args+=( --ip="$IP" )
-  [[ ! ${CLUSTER:-} ]] || args+=( --cluster="$CLUSTER" )
-  [[ ! ${LOGS:-} ]]    || args+=( --log_dir="$LOGS" )
+  [[ ! ${ULIMIT:-} ]]   || ulimit $ULIMIT
+  [[ ! ${ZK:-} ]]       || args+=( --zk="$ZK" )
+  [[ ! ${PORT:-} ]]     || args+=( --port="$PORT" )
+  [[ ! ${IP:-} ]]       || args+=( --ip="$IP" )
+  [[ ! ${HOSTNAME:-} ]] || args+=( --hostname="$HOSTNAME" )
+  [[ ! ${CLUSTER:-} ]]  || args+=( --cluster="$CLUSTER" )
+  [[ ! ${LOGS:-} ]]     || args+=( --log_dir="$LOGS" )
 
   for f in "$etc_master"/* # cluster log_dir port &al.
   do

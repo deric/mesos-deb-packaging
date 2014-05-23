@@ -11,8 +11,11 @@
 #MASTER="192.168.1.1"
 MASTER=`cat /etc/mesos/zk`
 
-# slave's ip, must be unique in mesos cluster
+# slave's ip
 IP=""
+
+# The hostname the slave should report
+#HOSTNAME=""
 
 # Port to listen on (default: 5051)
 PORT=5051
