@@ -160,7 +160,7 @@ function init_scripts {
     fedora/*)
       mkdir -p usr/lib/systemd/system
       cp "$this"/fedora/master.systemd usr/lib/systemd/system/mesos-master.service
-      cp "$this"/fedora/slave.systemd usr/lib/systemd/system/mesos-master.service ;;
+      cp "$this"/fedora/slave.systemd usr/lib/systemd/system/mesos-slave.service ;;
     *) err "Not sure how to make init scripts for: $1" ;;
   esac
 }
