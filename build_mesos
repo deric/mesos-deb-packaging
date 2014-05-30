@@ -247,6 +247,7 @@ function deb_ {
                --config-files "/etc/default/mesos-master"
                --config-files "/etc/default/mesos-slave"
                --config-files "/etc/mesos/zk"
+               --config-files "/etc/logrotate.d/mesos"
                 )
   fpm_ "${opts[@]}" -p "$this"/pkg.deb
 }
