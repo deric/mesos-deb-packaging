@@ -138,7 +138,7 @@ function create_installation {(
   cp "$this"/default/mesos*     etc/default/
   echo zk://localhost:2181/mesos > etc/mesos/zk
   # Disable registry replicated log since it requires manual configuration
-  if [[ "$version" =~ 0.19.0-rc[12] ]] || [[ "$repo" =~ 0\.19\.0-rc[12]$ ]]
+  if [[ "$version" =~ 0\.19\.0-rc[12] ]] || [[ "$repo" =~ 0\.19\.0-rc[12]$ ]]
   then echo in_memory > etc/mesos-master/registry
   fi
   init_scripts "$linux"
