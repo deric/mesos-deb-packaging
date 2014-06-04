@@ -137,8 +137,9 @@ function create_installation {(
   cp ../CHANGELOG                usr/share/doc/mesos/
   cp "$this"/default/mesos*      etc/default/
   echo zk://localhost:2181/mesos > etc/mesos/zk
-  [[ "$version" =~ ([0-9]+\.[0-9]+) ]]
-  if [[ $(vercomp ${BASH_REMATCH[1]} 0.18) == '>' ]]
+  [[ "$version" =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]
+  if [[ $(vercomp ${BASH_REMATCH[1]} 0.19.0) == '>' ]] ||
+     [[ $(vercomp ${BASH_REMATCH[1]} 0.19.0) == '=' ]]
   then
     echo /var/lib/mesos          > etc/mesos-master/work_dir
     echo 1                       > etc/mesos-master/quorum
@@ -310,6 +311,10 @@ function configure_opts {
 }
 
 # Compares version strings $1 with $2 and prints '=', '>', or '<'
+# Only works if compared strings have the same number of positions, for example:
+#   vercomp 0.19    0.2   # good
+#   vercomp 0.19.0  0.2.0 # good
+#   vercomp 0.19.0  0.2   # bad
 # Adapted from: http://stackoverflow.com/a/4025065/3389824
 function vercomp {
   if [[ $1 == $2 ]]
