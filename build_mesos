@@ -133,13 +133,16 @@ function create_installation {(
   ( cd build && make install DESTDIR="$pwd"/toor )
   cd toor
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
-  mkdir -p etc/mesos-master etc/mesos-slave
-  cp ../CHANGELOG               usr/share/doc/mesos/
-  cp "$this"/default/mesos*     etc/default/
+  mkdir -p etc/mesos-master etc/mesos-slave var/lib/mesos
+  cp ../CHANGELOG                usr/share/doc/mesos/
+  cp "$this"/default/mesos*      etc/default/
   echo zk://localhost:2181/mesos > etc/mesos/zk
-  # Disable registry replicated log since it requires manual configuration
-  if [[ "$version" =~ 0\.19\.0-rc[12] ]] || [[ "$repo" =~ 0\.19\.0-rc[12]$ ]]
-  then echo in_memory > etc/mesos-master/registry
+  [[ "$version" =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]
+  if [[ $(vercomp ${BASH_REMATCH[1]} 0.19.0) == '>' ]] ||
+     [[ $(vercomp ${BASH_REMATCH[1]} 0.19.0) == '=' ]]
+  then
+    echo /var/lib/mesos          > etc/mesos-master/work_dir
+    echo 1                       > etc/mesos-master/quorum
   fi
   init_scripts "$linux"
   jars
@@ -309,6 +312,46 @@ function configure_opts {
   then options="--without-cxx11"                # See: MESOS-750 and MESOS-1095
   fi
   out "$options"
+}
+
+# Compares version strings $1 with $2 and prints '=', '>', or '<'
+# Only works if compared strings have the same number of positions, for example:
+#   vercomp 0.19    0.2   # good
+#   vercomp 0.19.0  0.2.0 # good
+#   vercomp 0.19.0  0.2   # bad
+# Adapted from: http://stackoverflow.com/a/4025065/3389824
+function vercomp {
+  if [[ $1 == $2 ]]
+  then
+    out '='
+    return
+  fi
+  local IFS=.
+  local i ver1=($1) ver2=($2)
+  # fill empty fields in ver1 with zeros
+  for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+  do
+    ver1[i]=0
+  done
+  for ((i=0; i<${#ver1[@]}; i++))
+  do
+    if [[ -z ${ver2[i]} ]]
+    then
+      # fill empty fields in ver2 with zeros
+      ver2[i]=0
+    fi
+    if ((10#${ver1[i]} > 10#${ver2[i]}))
+    then
+      out '>'
+      return
+    fi
+    if ((10#${ver1[i]} < 10#${ver2[i]}))
+    then
+      out '<'
+      return
+    fi
+  done
+  out =
 }
 
 function msg { out "$*" >&2 ;}
