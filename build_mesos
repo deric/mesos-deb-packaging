@@ -3,7 +3,9 @@ set -o errexit -o nounset -o pipefail
 export LC_ALL=C
 function -h {
 cat <<USAGE
- USAGE: build_mesos (--repo <git URL>)? (--nominal-version <version>)?
+ USAGE: build_mesos (--repo <git URL>)? \
+                    (--nominal-version <version>)? \
+                    (--build-version <debian_revision or rpm release>)?
 
   Performs a build in ./mesos-repo after checking out a recent copy of Mesos.
   The default is to checkout:
@@ -23,13 +25,15 @@ USAGE
 this="$(cd "$(dirname "$0")" && pwd -P)"
 name=mesos
 version="${version:-9999}"
+build_version="0.1.$(date -u +'%Y%m%d%H%M%S')"
 
 function main {
   while [[ $# -gt 0 ]]
   do
     case "$1" in                                      # Munging globals, beware
-      --repo)                   repo="$2"    ; shift 2 ;;
-      --nominal-version)        version="$2" ; shift 2 ;;
+      --repo)                   repo="$2"          ; shift 2 ;;
+      --nominal-version)        version="$2"       ; shift 2 ;;
+      --build-version)          build_version="$2" ; shift 2 ;;
       *)                        err 'Argument error. Please see help.' ;;
     esac
   done
@@ -235,6 +239,7 @@ function fpm_ {
   local opts=( -s dir
                -n "$name"
                -v "$version"
+               --iteration "$build_version"
                --description
 "Cluster resouce manager with efficient resource isolation
 Apache Mesos is a cluster manager that offers efficient resource isolation
