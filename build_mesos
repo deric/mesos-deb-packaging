@@ -3,8 +3,8 @@ set -o errexit -o nounset -o pipefail
 export LC_ALL=C
 function -h {
 cat <<USAGE
- USAGE: build_mesos (--repo <git URL>)? \
-                    (--nominal-version <version>)? \
+ USAGE: build_mesos (--repo <git URL>)?
+                    (--nominal-version <version>)?
                     (--build-version <debian_revision or rpm release>)?
 
   Performs a build in ./mesos-repo after checking out a recent copy of Mesos.
