@@ -1,5 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 set -e
+
+function upstart_stop {
+  if [ "$1 stop/waiting" != "$(service $1 status)" ]; then
+    service $1 stop
+  fi
+}
 
 case "$1" in
   install)
@@ -11,7 +17,7 @@ case "$1" in
      if [ -x /etc/init.d/mesos-master ]; then
        /etc/init.d/mesos-master stop
      elif [ -f /etc/init/mesos-master.conf ]; then
-       service mesos-master stop
+       upstart_stop "mesos-master"
      fi
    fi
    if [ -f /var/run/mesos-slave.pid ]; then
@@ -19,7 +25,7 @@ case "$1" in
      if [ -x /etc/init.d/mesos-slave ]; then
        /etc/init.d/mesos-slave stop
      elif [ -f /etc/init/mesos-slave.conf ]; then
-       service mesos-slave stop
+       upstart_stop "mesos-slave"
      fi
    fi
    ;;

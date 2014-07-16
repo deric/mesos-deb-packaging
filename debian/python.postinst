@@ -5,7 +5,7 @@ case "$1" in
   configure)
     python_path=$(ls /usr/local/lib/python2.7/dist-packages/*.egg)
     if [ -f "${python_path}" ]; then
-      easy_install $python_path
+      easy_install "$python_path"
     else
       echo "could not find python egg at: $python_path"
     fi
