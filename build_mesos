@@ -70,7 +70,8 @@ function checkout {
   else msg "Cloning: $repository at $ref" && git clone "$repository" mesos-repo
   fi
   repodir="${this}/mesos-repo"
-  ( cd mesos-repo && ( [[ ! ${ref:-} ]] || git checkout -f "$ref" ) && "$@" )
+  msg "git checkout -f $ref"
+  ( cd mesos-repo && ( [[ ! ${ref:-} ]] || git fetch --tags && git checkout -f "$ref" ) && "$@" )
 }
 
 function build {(
