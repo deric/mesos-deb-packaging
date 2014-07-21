@@ -69,7 +69,6 @@ function slave {
   [[ ! ${ULIMIT:-} ]]    || ulimit $ULIMIT
   [[ ! ${MASTER:-} ]]    || args+=( --master="$MASTER" )
   [[ ! ${IP:-} ]]        || args+=( --ip="$IP" )
-  [[ ! ${HOSTNAME:-} ]]  || args+=( --hostname="$HOSTNAME" )
   [[ ! ${LOGS:-} ]]      || args+=( --log_dir="$LOGS" )
   [[ ! ${ISOLATION:-} ]] || args+=( --isolation="$ISOLATION" )
 
@@ -120,7 +119,6 @@ function master {
   [[ ! ${ZK:-} ]]       || args+=( --zk="$ZK" )
   [[ ! ${PORT:-} ]]     || args+=( --port="$PORT" )
   [[ ! ${IP:-} ]]       || args+=( --ip="$IP" )
-  [[ ! ${HOSTNAME:-} ]] || args+=( --hostname="$HOSTNAME" )
   [[ ! ${CLUSTER:-} ]]  || args+=( --cluster="$CLUSTER" )
   [[ ! ${LOGS:-} ]]     || args+=( --log_dir="$LOGS" )
 
