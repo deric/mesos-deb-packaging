@@ -12,7 +12,7 @@ script
     DAEMON="/usr/local/sbin/mesos-slave"
     MESOS_SLAVE_OPTS=$(/usr/bin/mesos-init-wrapper slave)
     exec start-stop-daemon --start --make-pidfile --name mesos-slave \
-        --pidfile /var/run/mesos-slave.pid --exec ${DAEMON} -- ${MESOS_SLAVE_OPTS}
+        --pidfile /var/run/mesos-slave.pid --startas /bin/bash -- -c "exec $DAEMON $MESOS_SLAVE_OPTS"
 
 end script
 
