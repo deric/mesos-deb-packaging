@@ -119,7 +119,7 @@ function master {
     then
       local name="$(basename "$f")"
       if [[ $name == '?'* ]]         # Recognize flags (options without values)
-      then args+=( --"$name" )
+      then args+=( --"${name#'?'}" )
       else args+=( --"$name"="$(cat "$f")" )
       fi
     fi
