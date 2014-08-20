@@ -58,7 +58,7 @@ function main {
   done
   checkout
   version=${version:-"$(mesos_version)"}      # Set from checkout if no version
-  go
+  ( cd mesos-repo && go )
 }
 
 function go {
