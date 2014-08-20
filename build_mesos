@@ -295,7 +295,7 @@ and iterative jobs), and other applications."
 
 function save_python_egg {
   local eggs=( build/src/python/dist/*.egg build/src/python/native/dist/*.egg )
-  cp "$eggs[@]}" "$this"/
+  cp "${eggs[@]}" "$this"/
   if [[ $(vercomp "$version" 0.20.0) == '<' ]]
   then
     # Old way to create the distribution egg
