@@ -16,6 +16,22 @@ cat <<USAGE
   not work to use an \`='; the \`--repo' option must be separated from the Git
   URL with a space.
 
+  Nominal version is the Mesos major.minor.patch version and is autodetected
+  from the repository checkout. The detected version can be overridden with
+  --nominal-version.
+
+  Build version is an additional version string used for package releases. For
+  debian packages this is known as the 'debian revision' and for rpm packages
+  it is known as the 'rpm release version'. By default this is set to a
+  snapshot timestamp schema of the form: 0.1.%Y%m%d%H%M%S. Here are some
+  examples of what this might look like:
+
+    * Snapshot build:                   0.1.20140809173810
+    * Mesos release candidate 1:        0.2.rc1
+    * Mesos release candidate 2:        0.3.rc2
+    * Mesos release:                    1.0
+    * Mesos release with packaging fix: 1.1
+
   The repo can be given as ...?ref=prod7 or even ...?prod7 to select a
   particular branch to build.
 
@@ -23,12 +39,11 @@ USAGE
 }; function --help { -h ;}
 
 function globals {
-  export this="$(cd "$(dirname "$0")" && pwd -P)"
-  export name=mesos
-  export version="${version:-9999}"
-  [[ "$version" =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]
-  export version_sanitized="${BASH_REMATCH[1]}"
-  export build_version="0.1.$(date -u +'%Y%m%d%H%M%S')"
+  this="$(cd "$(dirname "$0")" && pwd -P)"
+  name=mesos
+  build_version="0.1.$(date -u +'%Y%m%d%H%M%S')"
+  repo=https://git-wip-us.apache.org/repos/asf/mesos.git
+  use_git_version=false
 }; globals
 
 function main {
@@ -41,7 +56,9 @@ function main {
       *)                        err 'Argument error. Please see help.' ;;
     esac
   done
-  checkout go
+  checkout
+  version=${version:-"$(mesos_version)"}      # Set from checkout if no version
+  go
 }
 
 function go {
@@ -51,7 +68,24 @@ function go {
   save_python_egg
 }
 
-use_git_version=false
+function mesos_version {
+  local configure_ac=mesos-repo/configure.ac
+  if [[ -f "$configure_ac" ]]
+  then
+    # Error if AC_INIT is not found or extracted version does not match pattern
+    local ac_init=$(grep '^AC_INIT(\[mesos\], \[' "$configure_ac")
+    if [[ ! "$ac_init" =~ .*([0-9]+\.[0-9]+\.[0-9]+).* ]]
+    then
+      err "Unable to extract Mesos version from: ${configure_ac}"
+      exit 1
+    fi
+    out "${BASH_REMATCH[1]}"
+  else
+    err "Unable to find ${configure_ac}; checkout required"
+    exit 1
+  fi
+}
+
 function maybe_append_git_hash {
   if $use_git_version && git rev-parse --git-dir &>/dev/null
   then out "$1-g$(git log -n1 --format=%h)"
@@ -59,7 +93,6 @@ function maybe_append_git_hash {
   fi
 }
 
-repo=https://git-wip-us.apache.org/repos/asf/mesos.git
 function checkout {
   local url=( $(url_split "$repo") )
   local repository="${url[0]}"
@@ -145,8 +178,8 @@ function create_installation {(
   cp ../CHANGELOG                usr/share/doc/mesos/
   cp "$this"/default/mesos*      etc/default/
   echo zk://localhost:2181/mesos > etc/mesos/zk
-  if [[ $(vercomp "$version_sanitized" 0.19.0) == '>' ]] ||
-     [[ $(vercomp "$version_sanitized" 0.19.0) == '=' ]]
+  if [[ $(vercomp "$version" 0.19.0) == '>' ]] ||
+     [[ $(vercomp "$version" 0.19.0) == '=' ]]
   then
     echo /var/lib/mesos          > etc/mesos-master/work_dir
     echo 1                       > etc/mesos-master/quorum
@@ -263,7 +296,7 @@ and iterative jobs), and other applications."
 function save_python_egg {
   local eggs=( build/src/python/dist/*.egg build/src/python/native/dist/*.egg )
   cp "$eggs[@]}" "$this"/
-  if [[ $(vercomp "$version_sanitized" 0.20.0) == '<' ]]
+  if [[ $(vercomp "$version" 0.20.0) == '<' ]]
   then
     # Old way to create the distribution egg
     cat "${eggs[@]}" > "$this"/mesos.egg
