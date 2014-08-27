@@ -76,7 +76,7 @@ function checkout {
 
 function build {(
   autoreconf -f -i -Wall,no-obsolete
-  make distclean
+  #make distclean
   ./bootstrap
   mkdir -p build
   cd build
