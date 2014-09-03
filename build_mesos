@@ -1,6 +1,7 @@
 #!/bin/bash
 set -o errexit -o nounset -o pipefail
 export LC_ALL=C
+export SHELL=/bin/bash
 function -h {
 cat <<USAGE
  USAGE: build_mesos (--repo <git URL>)? (--nominal-version <version>)?
@@ -148,7 +149,7 @@ function create_installation {(
   init_scripts "$linux"
   logrotate
   jars
-  save_python_egg
+  save_python_eggs
   if [[ $use_sudo = true ]]; then
     sudo chown -R 0:0 .
   else
@@ -290,42 +291,38 @@ and iterative jobs), and other applications."
   ( cd toor && "$gem_bin"/fpm "${opts[@]}" "$@" -- . )
 }
 
-function save_python_egg {
-  local egg_path="${repodir}/build/src/python/dist/*.egg"
-  msg "python egg: ${egg_path}"
-  local python_path=$(ls ${egg_path})
-  if [ ! -f $python_path ]; then
-    err "file ${python_path} does not exist"
-  fi
-  pyroot="${pwd}/python"
-  local pydest="${pyroot}/usr/local/lib/python2.7/dist-packages"
-  mkdir -p $pydest
-  mv $python_path $pydest
-  msg "python copied to: ${pydest}"
-  if [[ $use_sudo = true ]]; then
-    sudo chown -R 0:0 ${pydest}
-  else
-    chown -R 0:0 ${pydest}
-  fi
-  case "$linux" in
-    ubuntu/*|debian/*)
-      local scripts="${linux%%/*}"
-      local opts=( -t deb
-               -d 'python'
-               -d 'python-setuptools'
-               --after-install "$this/debian/python.postinst"
-               )
-      python_pkg_ "${opts[@]}" -p "$this"/python-mesos.deb
-      ;;
-    *)                 err "Not sure how to package for: $linux" ;;
-  esac
+function save_python_eggs {
+  for egg in ${repodir}/build/src/python/*/dist/*.egg; do
+    msg "python egg: ${egg}"
+    case "$linux" in
+      ubuntu/*|debian/*)
+        python_pkg_ "$egg" -t deb
+        ;;
+      *)                 err "Not sure how to package for: $linux" ;;
+    esac
+  done
   cd $pwd
 }
 
 function python_pkg_ {
-  local version="$(maybe_append_git_hash "$version")"
-  local opts=( -s dir
-               -n "python-mesos"
+  # Takes an egg and turns it into a deb. 
+  # Takes a egg filename as the first argument, and any extra fpm args after that.
+  local egg_path=$1
+  shift
+  # For fpm to work on python stuff, the package name must be in a directory
+  # local to the current path. In our build tree the python modules are here
+  cd "$this/mesos-repo/build/src/python"
+
+  # component here is the namespaced python module. i.e. mesos.native
+  local basename=$(basename ${egg_path})
+  local component=${basename%%-*}
+
+  # Note: Version must stay with the stock version (no extra) for fpm to handle
+  # The dependencies correctly.
+  local version=${version%%-*}
+
+  local opts=( -s python
+               -n "python-$component"
                -v "$version"
                --description
 "Cluster resouce manager with efficient resource isolation
@@ -338,8 +335,14 @@ and iterative jobs), and other applications."
                --category misc
                --vendor "Apache Mesos"
                -m mesos-dev@incubator.apache.org
-               --prefix=/ )
-  ( cd $pyroot && "$gem_bin"/fpm "${opts[@]}" "$@" -- . )
+               )
+  if [[ $component =~ ^.*\..*$ ]]; then
+    # Components with a . in the name need to be moved first so that fpm can
+    # pick up on the right folder and find the setup.py
+    local second_part=${component##*\.}
+    mv "$second_part" "$component"
+  fi
+  fpm "${opts[@]}" "$@" -- "$component"
 
 }
 
@@ -354,6 +357,7 @@ function get_system_info {
   linux="$(os_release)"                 # <distro>/<version>, like ubuntu/12.10
   arch="$(architecture)"          # In the format used to label distro packages
   gem_bin="$(find_gem_bin)"                          # Might not be on the PATH
+  PATH="$PATH${gem_bin:+:$gem_bin}"
 }
 
 function url_fragment {
