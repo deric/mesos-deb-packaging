@@ -5,7 +5,7 @@ case "$1" in
   configure)
     #update paths to libmesos.so
     ldconfig
-    if [ -f /tmp/mesos-master-reload ]; then
+    if [ -f /tmp/mesos-master-reload ] && pgrep mesos-master >/dev/null; then
       if [ -x /etc/init.d/mesos-master ]; then
         update-rc.d mesos-master defaults
         /etc/init.d/mesos-master start
@@ -15,7 +15,7 @@ case "$1" in
       rm /tmp/mesos-master-reload
     fi
 
-    if [ -f /tmp/mesos-slave-reload ]; then
+    if [ -f /tmp/mesos-slave-reload ]  && pgrep mesos-slave >/dev/null; then
       if [ -x /etc/init.d/mesos-slave ]; then
         update-rc.d mesos-slave defaults
         /etc/init.d/mesos-slave start

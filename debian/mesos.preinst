@@ -12,7 +12,7 @@ case "$1" in
    ;;
 
   upgrade)
-   if [ -f /var/run/mesos-master.pid ]; then
+   if [ -f /var/run/mesos-master.pid ] && pgrep mesos-master >/dev/null; then
      touch /tmp/mesos-master-reload
      if [ -x /etc/init.d/mesos-master ]; then
        /etc/init.d/mesos-master stop
@@ -20,7 +20,7 @@ case "$1" in
        upstart_stop "mesos-master"
      fi
    fi
-   if [ -f /var/run/mesos-slave.pid ]; then
+   if [ -f /var/run/mesos-slave.pid ] && pgrep mesos-slave >/dev/null; then
      touch /tmp/mesos-slave-reload
      if [ -x /etc/init.d/mesos-slave ]; then
        /etc/init.d/mesos-slave stop

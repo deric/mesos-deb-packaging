@@ -3,7 +3,7 @@ set -e
 
 case "$1" in
   upgrade|remove|remove-in-favour|deconfigure|deconfigure-in-favour)
-    if [ -f /var/run/mesos-master.pid ]; then
+    if [ -f /var/run/mesos-master.pid ] && pgrep mesos-master >/dev/null; then
       if [ -x /etc/init.d/mesos-master ]; then
          /etc/init.d/mesos-master stop
       elif [ -f /etc/init/mesos-master.conf ]; then
@@ -11,7 +11,7 @@ case "$1" in
       fi
     fi
 
-    if [ -f /var/run/mesos-slave.pid ]; then
+    if [ -f /var/run/mesos-slave.pid ] && pgrep mesos-slave >/dev/null; then
       if [ -x /etc/init.d/mesos-slave ]; then
         /etc/init.d/mesos-slave stop
       elif [ -f /etc/init/mesos-slave.conf ]; then
