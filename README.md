@@ -2,6 +2,13 @@
 
 Mesos is a cluster manager that provides efficient resource isolation and sharing across distributed applications, or frameworks.  See [Mesos website](http://mesos.apache.org/) for more details.
 
+NOTE: if you build Mesos on system with e.g. `libcurl4-nss-dev` it will be hardlinked to this implementation library. On Debian `libcurl-dev` is the virtual package for:
+
+  * `libcurl-dev`
+  * `libcurl4-nss-dev`
+  * `libcurl4-openssl-dev`
+
+
 ## Mesos configuration
 
 Mesos arguments could be specified by creating files structure in `/etc/mesos-slave` or in `/etc/mesos-master`.
