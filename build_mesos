@@ -141,7 +141,7 @@ function build {(
   cd "$build_dir"
   "$src_dir"/configure $(configure_opts)
   # optimal number of build jobs is 2x num_cores
-  make -j $(($(num_cores)*2))
+  make
 )}
 
 function os_release {
