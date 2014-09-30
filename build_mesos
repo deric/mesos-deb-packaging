@@ -46,10 +46,20 @@ function globals {
   use_git_version=false
 }; globals
 
+function as_absolute {
+  if [[ "$1" == "/*" ]]; then
+    echo "$1"
+  else
+    echo "$start_dir/$1"
+  fi
+}
+
 function main {
   while [[ $# -gt 0 ]]
   do
     case "$1" in                                      # Munging globals, beware
+      --src-dir)                src_dir="$2"       ; shift 2 ;;
+      --build-dir)              build_dir="$2"     ; shift 2 ;;
       --repo)                   repo="$2"          ; shift 2 ;;
       --branch)                 branch="$2"        ; shift 2 ;;
       --nominal-version)        version="$2"       ; shift 2 ;;
@@ -57,9 +67,16 @@ function main {
       *)                        err 'Argument error. Please see help.' ;;
     esac
   done
+
+  : "${src_dir:=mesos-repo}"
+  : "${build_dir:=$src_dir/build}"
+
+  src_dir=$(as_absolute "$src_dir")
+  build_dir=$(as_absolute "$build_dir")
+
   checkout
   version=${version:-"$(mesos_version)"}      # Set from checkout if no version
-  ( cd mesos-repo && go )
+  ( cd "$src_dir" && go )
 }
 
 function go {
@@ -70,7 +87,7 @@ function go {
 }
 
 function mesos_version {
-  local configure_ac=mesos-repo/configure.ac
+  local configure_ac="$src_dir"/configure.ac
   if [[ -f "$configure_ac" ]]
   then
     # Error if AC_INIT is not found or extracted version does not match pattern
@@ -105,19 +122,19 @@ function checkout {
     ref=*|h=*|branch=*|tag=*) local ref="${query#*=}" ;;
     *)                        local ref="$query" ;;
   esac
-  if [[ -d mesos-repo ]]
-  then msg "Found directory \`mesos-repo'; skipping checkout."
-  else msg "Cloning: $repository at $ref" && git clone "$repository" mesos-repo
+  if [[ -d "$src_dir" ]]
+  then msg "Found directory \`$src_dir'; skipping checkout."
+  else msg "Cloning: $repository at $ref" && git clone "$repository" "$src_dir"
   fi
-  ( cd mesos-repo && ( [[ ! ${ref:-} ]] || git checkout -f "$ref" ) && "$@" )
+  ( cd "$src_dir" && ( [[ ! ${ref:-} ]] || git checkout -f "$ref" ) && "$@" )
 }
 
 function build {(
   autoreconf -f -i -Wall,no-obsolete
   ./bootstrap
-  mkdir -p build
-  cd build
-  ../configure $(configure_opts)
+  mkdir -p "$build_dir"
+  cd "$build_dir"
+  "$src_dir"/configure $(configure_opts)
   # optimal number of build jobs is 2x num_cores
   make -j $(($(num_cores)*2))
 )}
@@ -172,7 +189,7 @@ function display_version {
 function create_installation {(
   local pwd="$(pwd -P)"
   mkdir -p toor
-  ( cd build && make install DESTDIR="$pwd"/toor )
+  ( cd "$build_dir" && make install DESTDIR="$pwd"/toor )
   cd toor
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   mkdir -p etc/mesos-master etc/mesos-slave var/lib/mesos
@@ -216,9 +233,9 @@ function init_scripts {
 
 function jars {
   mkdir -p usr/share/java/
-  if [[ -d ../build/src/java/target ]]
-  then mv ../build/src/java/target/mesos-*.jar usr/share/java # Mesos >= 0.18.1
-  else mv ../build/src/mesos-*.jar usr/share/java             # Mesos <  0.18.1
+  if [[ -d "$build_dir"/src/java/target ]]
+  then mv "$build_dir"/src/java/target/mesos-*.jar usr/share/java # Mesos >= 0.18.1
+  else mv "$build_dir"/src/mesos-*.jar usr/share/java             # Mesos <  0.18.1
   fi
 }
 
@@ -295,7 +312,7 @@ and iterative jobs), and other applications."
 }
 
 function save_python_egg {
-  local eggs=( build/src/python/dist/*.egg build/src/python/native/dist/*.egg )
+  local eggs=( "$build_dir"/src/python/dist/*.egg "$build_dir"/src/python/native/dist/*.egg )
   cp "${eggs[@]}" "$this"/
   if [[ $(vercomp "$version" 0.20.0) == '<' ]]
   then
@@ -318,6 +335,7 @@ function get_system_info {
   linux="$(os_release)"                 # <distro>/<version>, like ubuntu/12.10
   arch="$(architecture)"          # In the format used to label distro packages
   gem_bin="$(find_gem_bin)"                          # Might not be on the PATH
+  start_dir="$PWD"
 }
 
 function url_fragment {
