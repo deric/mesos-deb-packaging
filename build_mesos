@@ -209,7 +209,6 @@ function create_installation {(
   fi
   init_scripts "$linux"
   jars
-  chown -R 0:0 .
 )}
 
 function init_scripts {
