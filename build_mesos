@@ -273,6 +273,7 @@ function deb_ {
                -d libcurl3
                --after-install "$this/$scripts/mesos.postinst"
                --after-remove "$this/$scripts/mesos.postrm" )
+  rm -f "$this"/pkg.deb
   fpm_ "${opts[@]}" -p "$this"/pkg.deb
 }
 
@@ -282,6 +283,7 @@ function rpm_ {
                -d libcurl
                --after-install "$this/$scripts/mesos.postinst"
                --after-remove "$this/$scripts/mesos.postrm" )
+  rm -f "$this"/pkg.rpm
   fpm_ "${opts[@]}" -p "$this"/pkg.rpm
 }
 
