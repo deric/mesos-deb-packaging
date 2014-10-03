@@ -35,6 +35,13 @@ cat <<USAGE
   The repo can be given as ...?ref=prod7 or even ...?prod7 to select a
   particular branch to build.
 
+  Rather than have this script perform all the build steps, you can point it at
+  all or part of an exsting build and have it go from there. Use \`--src-dir' to
+  specify the code checkout to use. \`--build-dir' to specify where 'make'
+  should be run from. If you have already run built mesos in that directory,
+  then you can use \`--prebuilt' to tell the script to just run make install
+  inside the build directory to make the package.
+
 USAGE
 }; function --help { -h ;}
 
