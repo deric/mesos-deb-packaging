@@ -147,7 +147,6 @@ function build {(
   mkdir -p "$build_dir"
   cd "$build_dir"
   "$src_dir"/configure $(configure_opts)
-  # optimal number of build jobs is 2x num_cores
   make
 )}
 
@@ -367,23 +366,6 @@ function url_split {
   out "$sans_query"
   out "$query"
   out "$fragment"
-}
-
-# Print the number of cores detected. If we are unable to determine the number
-# of cores, print a warning and assume "1" core.
-function num_cores {
-  local cores=
-  if hash nproc &>/dev/null
-  then cores="$(nproc)"                                   # Linux based systems
-  else                                                            # OSX and BSD
-    if cores="$(sysctl -n hw.ncpu)"
-    then : # Do nothing, success
-    else
-      msg "Could not find nproc and sysctl failed; defaulting to 1 core."
-      cores=1
-    fi
-  fi
-  out "$cores"
 }
 
 # Return Mesos configuration options
