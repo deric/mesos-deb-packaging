@@ -55,7 +55,7 @@ function globals {
 }; globals
 
 function as_absolute {
-  if [[ "$1" == "/*" ]]; then
+  if [[ "$1" == /* ]]; then
     echo "$1"
   else
     echo "$start_dir/$1"
