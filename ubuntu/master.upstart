@@ -5,7 +5,9 @@ description "mesos master"
 # Ubuntu, Debian, CentOS, and RHEL distros. See:
 # http://upstart.ubuntu.com/cookbook/#standard-idioms
 start on stopped rc RUNLEVEL=[2345]
+
 respawn
+respawn limit 3 420
 
 script
     [ -r /etc/default/mesos ] && . /etc/default/mesos
