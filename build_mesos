@@ -229,7 +229,7 @@ function init_scripts {
       mkdir -p etc/init
       cp "$this"/upstart/master.upstart etc/init/mesos-master.conf
       cp "$this"/upstart/slave.upstart etc/init/mesos-slave.conf ;;
-    fedora/*)
+    fedora/*|redhat/7|redhat/7.*|centos/7|centos/7.*)
       mkdir -p usr/lib/systemd/system
       cp "$this"/systemd/master.systemd usr/lib/systemd/system/mesos-master.service
       cp "$this"/systemd/slave.systemd usr/lib/systemd/system/mesos-slave.service ;;
