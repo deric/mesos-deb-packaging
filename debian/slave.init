@@ -20,7 +20,7 @@ PID=/var/run/mesos-slave.pid
 start() {
   start-stop-daemon --start --background --quiet \
                     --pidfile "$PID" --make-pidfile \
-                    --exec /usr/bin/mesos-init-wrapper -- slave
+                    --startas /usr/bin/mesos-init-wrapper -- slave
 }
 
 stop() {
