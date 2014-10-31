@@ -275,7 +275,7 @@ function deb_ {
                --deb-recommends zookeeper
                --deb-recommends zookeeperd
                --deb-recommends zookeeper-bin
-               -d 'java7-runtime-headless | java6-runtime-headless'
+               -d 'java-runtime-headless'
                -d libcurl3
                --after-install "$this/$scripts/mesos.postinst"
                --after-remove "$this/$scripts/mesos.postrm" )
