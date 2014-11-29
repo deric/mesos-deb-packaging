@@ -82,6 +82,15 @@ function main {
 
   src_dir=$(as_absolute "$src_dir")
   build_dir=$(as_absolute "$build_dir")
+
+  # Use the more specific dir, e.g. centos/6 will be used over centos if present
+  if [[ -d "$this/$linux" ]]
+  then asset_dir="$linux"
+  elif [[ -d "${linux%%/*}" ]]
+  then asset_dir="${linux%%/*}"
+  else err "Unable to determine asset_dir for $linux"; exit 1
+  fi
+
   if ! $prebuilt; then
     checkout
   fi
@@ -223,20 +232,16 @@ function init_scripts {
   case "$1" in
     debian/*)
       mkdir -p etc/init.d
-      cp -p "$this"/debian/master.init etc/init.d/mesos-master
-      cp -p "$this"/debian/slave.init etc/init.d/mesos-slave ;;
-    ubuntu/*)
+      cp -p "$this"/init/master.init etc/init.d/mesos-master
+      cp -p "$this"/init/slave.init etc/init.d/mesos-slave ;;
+    ubuntu/*|redhat/6|redhat/6.*|centos/6|centos/6.*)
       mkdir -p etc/init
-      cp "$this"/ubuntu/master.upstart etc/init/mesos-master.conf
-      cp "$this"/ubuntu/slave.upstart etc/init/mesos-slave.conf ;;
-    redhat/6|redhat/6.*|centos/6|centos/6.*)
-      mkdir -p etc/init
-      cp "$this"/ubuntu/master.upstart etc/init/mesos-master.conf
-      cp "$this"/ubuntu/slave.upstart etc/init/mesos-slave.conf ;;
-    fedora/*)
+      cp "$this"/upstart/master.upstart etc/init/mesos-master.conf
+      cp "$this"/upstart/slave.upstart etc/init/mesos-slave.conf ;;
+    fedora/*|redhat/7|redhat/7.*|centos/7|centos/7.*)
       mkdir -p usr/lib/systemd/system
-      cp "$this"/fedora/master.systemd usr/lib/systemd/system/mesos-master.service
-      cp "$this"/fedora/slave.systemd usr/lib/systemd/system/mesos-slave.service ;;
+      cp "$this"/systemd/master.systemd usr/lib/systemd/system/mesos-master.service
+      cp "$this"/systemd/slave.systemd usr/lib/systemd/system/mesos-slave.service ;;
     *) err "Not sure how to make init scripts for: $1" ;;
   esac
 }
@@ -270,7 +275,6 @@ function find_gem_bin {
 }
 
 function deb_ {
-  local scripts="${linux%%/*}"
   local opts=( -t deb
                --deb-recommends zookeeper
                --deb-recommends zookeeperd
@@ -278,19 +282,18 @@ function deb_ {
                -d 'java-runtime-headless'
                -d libcurl3
                -d libsvn1
-               --after-install "$this/$scripts/mesos.postinst"
-               --after-remove "$this/$scripts/mesos.postrm" )
+               --after-install "$this/$asset_dir/mesos.postinst"
+               --after-remove "$this/$asset_dir/mesos.postrm" )
   rm -f "$this"/pkg.deb
   fpm_ "${opts[@]}" -p "$this"/pkg.deb
 }
 
 function rpm_ {
-  local scripts="${linux%%/*}"
   local opts=( -t rpm
                -d libcurl
                -d subversion
-               --after-install "$this/$scripts/mesos.postinst"
-               --after-remove "$this/$scripts/mesos.postrm" )
+               --after-install "$this/$asset_dir/mesos.postinst"
+               --after-remove "$this/$asset_dir/mesos.postrm" )
   rm -f "$this"/pkg.rpm
   fpm_ "${opts[@]}" -p "$this"/pkg.rpm
 }
