@@ -282,8 +282,8 @@ function deb_ {
                -d 'java-runtime-headless'
                -d libcurl3
                -d libsvn1
-               --after-install "$this/$scripts/mesos.postinst"
-               --after-remove "$this/$scripts/mesos.postrm" )
+               --after-install "$this/$asset_dir/mesos.postinst"
+               --after-remove "$this/$asset_dir/mesos.postrm" )
   rm -f "$this"/pkg.deb
   fpm_ "${opts[@]}" -p "$this"/pkg.deb
 }
@@ -292,8 +292,8 @@ function rpm_ {
   local opts=( -t rpm
                -d libcurl
                -d subversion
-               --after-install "$this/$scripts/mesos.postinst"
-               --after-remove "$this/$scripts/mesos.postrm" )
+               --after-install "$this/$asset_dir/mesos.postinst"
+               --after-remove "$this/$asset_dir/mesos.postrm" )
   rm -f "$this"/pkg.rpm
   fpm_ "${opts[@]}" -p "$this"/pkg.rpm
 }
