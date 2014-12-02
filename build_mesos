@@ -4,7 +4,7 @@ export LC_ALL=C
 export SHELL=/bin/bash
 function -h {
 cat <<USAGE
- USAGE: build_mesos (--repo <git URL>)? (--nominal-version <version>)?
+ USAGE: build_mesos (--repo <git URL>)? (--version <version>)?
 
   Performs a build in ./mesos-repo after checking out a recent copy of Mesos.
   The default is to checkout:
@@ -343,7 +343,7 @@ and iterative jobs), and other applications."
 }
 
 function save_python_eggs {
-  for egg in ${repodir}/build/src/python/*/dist/*.egg; do
+  for egg in ${repodir}/build/src/python/dist/*.egg; do
     msg "python egg: ${egg}"
     case "$linux" in
       ubuntu/*|debian/*)
