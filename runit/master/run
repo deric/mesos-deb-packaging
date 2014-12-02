@@ -1,0 +1,10 @@
+#!/bin/bash
+
+exec 2>&1
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+DAEMON=/usr/local/sbin/mesos-master
+MASTER_OPTS=$(/usr/bin/mesos-init-wrapper master)
+
+exec $DAEMON ${MASTER_OPTS} 2>&1
+

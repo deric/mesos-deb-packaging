@@ -26,15 +26,17 @@ name=mesos
 version="${version:-9999}"
 use_sudo=false
 ref=""
+start_with="system"
 
 function main {
   while [[ $# -gt 0 ]]
   do
     case "$1" in                                      # Munging globals, beware
-      --ref)                    ref="$2"     ; shift 2 ;;
-      --repo)                   repo="$2"    ; shift 2 ;;
-      --version)                version="$2" ; shift 2 ;;
-      --use-sudo)               use_sudo=true; shift 1 ;;
+      --ref)                    ref="$2"        ; shift 2 ;;
+      --repo)                   repo="$2"       ; shift 2 ;;
+      --version)                version="$2"    ; shift 2 ;;
+      --start-with)             start_with="$2" ; shift 2 ;;
+      --use-sudo)               use_sudo=true   ; shift 1 ;;
       *)                        err 'Argument error. Please see help.' ;;
     esac
   done
@@ -151,7 +153,15 @@ function create_installation {(
   cp ../CHANGELOG               usr/share/doc/mesos/
   cp "$this"/default/mesos*     etc/default/
   echo zk://localhost:2181/mesos > etc/mesos/zk
-  init_scripts "$linux"
+
+  mkdir -p usr/bin
+  cp -p "$this"/mesos-init-wrapper usr/bin
+
+  if [[ $start_with == "system" ]];then
+    init_scripts "$linux"
+  else
+    runit
+  fi
   logrotate
   jars
   save_python_eggs
@@ -163,8 +173,6 @@ function create_installation {(
 )}
 
 function init_scripts {
-  mkdir -p usr/bin
-  cp -p "$this"/mesos-init-wrapper usr/bin
   case "$1" in
     debian/*)
       mkdir -p etc/init.d
@@ -180,6 +188,14 @@ function init_scripts {
       cp "$this"/ubuntu/slave.upstart etc/init/mesos-slave.conf ;;
     *) err "Not sure how to make init scripts for: $1" ;;
   esac
+}
+
+function runit {
+  mkdir -p etc/service
+  mkdir -p srv/mesos-master
+  mkdir -p srv/mesos-slave
+  cp -r "$this"/runit/master srv/mesos-master
+  cp -r "$this"/runit/slave srv/mesos-slave
 }
 
 function jars {
@@ -257,6 +273,10 @@ function deb_ {
                --config-files "/etc/mesos/zk"
                --config-files "/etc/logrotate.d/mesos"
                 )
+  if [[ $start_with == "runit" ]];then
+    opts+=( -d 'runit' )
+  fi
+
   fpm_ "${opts[@]}" -p "$this"/pkg.deb
 }
 
