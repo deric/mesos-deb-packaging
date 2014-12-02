@@ -261,6 +261,7 @@ function deb_ {
   local opts=( -t deb
                -d 'java-runtime-headless'
                -d "libcurl3"
+               -d "libsvn1" # since 0.21
                -d "libunwind7|libunwind8"
                --before-install "$this/debian/mesos.preinst"
                --after-install "$this/debian/mesos.postinst"

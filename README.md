@@ -56,7 +56,10 @@ or supply just `ref` to tag in the (default) repo:
   * Java support
     * e.g. `openjdk-7-jre-headless`, `openjdk-7-jdk` ,`maven`
 
-  * for Mesos < 0.14 you'll not need `libsasl2-dev`
+  * Mesos >= 0.14
+    * Debian: `libsasl2-dev`
+  * Mesos >= 0.21
+    * Debian: `libapr1-dev libsvn-dev`
 
 ## Puppet
 
