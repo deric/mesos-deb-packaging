@@ -34,7 +34,14 @@ In similar manner you can restrict hardware resources used by mesos-slave:
 
 Build deb package for Debian/Ubuntu with following:
 
-        ./build_mesos --repo https://git-wip-us.apache.org/repos/asf/mesos.git?ref=0.15.0 --nominal-version 0.15.0
+```
+./build_mesos --repo https://git-wip-us.apache.org/repos/asf/mesos.git?ref=0.15.0 --version 0.15.0
+```
+
+or supply just `ref` to tag in the (default) repo:
+```
+./build_mesos --ref 0.21.0 --version 0.21.0
+```
 
 ### Requirements
 
@@ -54,10 +61,6 @@ Build deb package for Debian/Ubuntu with following:
 ## Puppet
 
 Package could be automatically configured by a [Puppet module](https://github.com/deric/puppet-mesos)
-
-## TODO
-
-   * RedHat/CentOS RPM support
 
 ## Authors
 
