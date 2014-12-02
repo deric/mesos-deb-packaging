@@ -243,7 +243,7 @@ function find_gem_bin {
 function deb_ {
   local scripts="${linux%%/*}"
   local opts=( -t deb
-               -d 'java7-runtime-headless | java6-runtime-headless'
+               -d 'java-runtime-headless'
                -d libcurl3
                -d "libcurl-dev"
                -d "libunwind7|libunwind8"
