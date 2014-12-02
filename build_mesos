@@ -260,8 +260,7 @@ function deb_ {
   local scripts="${linux%%/*}"
   local opts=( -t deb
                -d 'java-runtime-headless'
-               -d libcurl3
-               -d "libcurl-dev"
+               -d "libcurl3"
                -d "libunwind7|libunwind8"
                --before-install "$this/debian/mesos.preinst"
                --after-install "$this/debian/mesos.postinst"
@@ -277,8 +276,34 @@ function deb_ {
     opts+=( -d 'runit' )
   fi
 
+  if [[ $(check_pkg 'libcurl4-nss-dev') -eq 1 ]];then
+    opts+=( -d 'libcurl4-nss-dev' )
+  elif [[ $(check_pkg 'libcurl4-openssl-dev') -eq 1 ]];then
+    opts+=( -d 'libcurl4-openssl-dev' )
+  elif [[ $(check_pkg 'libcurl4-gnutls-dev') -eq 1 ]];then
+    opts+=( -d 'libcurl4-gnutls-dev' )
+  else
+    err "missing libcurl-dev package"
+    exit 1
+  fi
+
   fpm_ "${opts[@]}" -p "$this"/pkg.deb
 }
+
+function check_pkg {
+  local ret=-1
+  case "$linux" in
+    ubuntu/*|debian/*)
+     ret=$(dpkg --get-selections $1 | grep "install" | wc -l)
+    ;;
+    centos/*|redhat/*)
+      err "not implemented yet"
+    ;;
+    *) err "Not sure how to configure logrotate for: $linux" ;;
+  esac
+  echo $ret
+}
+
 
 function rpm_ {
   local scripts="${linux%%/*}"
