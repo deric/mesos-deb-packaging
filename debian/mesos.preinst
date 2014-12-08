@@ -1,33 +1,12 @@
 #!/bin/bash
 set -e
 
-function upstart_stop {
-  if [ "$1 stop/waiting" != "$(service $1 status)" ]; then
-    service $1 stop
-  fi
-}
-
 case "$1" in
   install)
    ;;
 
   upgrade)
-   if [ -f /var/run/mesos-master.pid ] && pgrep mesos-master >/dev/null; then
-     touch /tmp/mesos-master-reload
-     if [ -x /etc/init.d/mesos-master ]; then
-       /etc/init.d/mesos-master stop
-     elif [ -f /etc/init/mesos-master.conf ]; then
-       upstart_stop "mesos-master"
-     fi
-   fi
-   if [ -f /var/run/mesos-slave.pid ] && pgrep mesos-slave >/dev/null; then
-     touch /tmp/mesos-slave-reload
-     if [ -x /etc/init.d/mesos-slave ]; then
-       /etc/init.d/mesos-slave stop
-     elif [ -f /etc/init/mesos-slave.conf ]; then
-       upstart_stop "mesos-slave"
-     fi
-   fi
+
    ;;
 
   abort-upgrade)
