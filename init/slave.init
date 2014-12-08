@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ### BEGIN INIT INFO
 # Provides:          mesos-slave
 # Required-Start:    $local_fs $remote_fs $network $syslog
@@ -25,9 +25,9 @@ PIDFILE=/var/run/mesos-slave.pid
 
 start_mesos() {
   SLAVE_OPTS=$(/usr/bin/mesos-init-wrapper slave)
-  start-stop-daemon --start --background --quiet \
-                    --pidfile "$PIDFILE" --make-pidfile \
-                    --startas /bin/bash -- -c "exec $DAEMON $SLAVE_OPTS"
+  su -l -c "start-stop-daemon --start --background --quiet \
+                     --pidfile \"$PIDFILE\" --make-pidfile \
+                     --startas /bin/bash -- -c \"exec $DAEMON $SLAVE_OPTS\" "
 }
 
 stop_mesos() {

@@ -5,4 +5,3 @@
 USE_SYSLOG=false
 # separate 'master.log' and 'slave.log' files
 LOG_DIR="/var/log/mesos"
-ULIMIT="-n 8192"

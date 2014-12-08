@@ -20,6 +20,10 @@ IP=""
 # Port to listen on (default: 5051)
 PORT=5051
 
+ULIMIT_OPEN_FILES=100000
+ULIMIT_MAX_PROCESSES=256761
+ULIMIT_PENDING_SIGNALS=256761
+
 # alternative is to use MESOS_<option> as an envar
 # option list is available with /usr/sbin/mesos-slave --help
 # EX :
