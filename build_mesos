@@ -261,7 +261,6 @@ function deb_ {
   local opts=( -t deb
                -d 'java-runtime-headless'
                -d "libcurl3"
-               -d "libsvn1" # since 0.21
                -d "libunwind7|libunwind8"
                --before-install "$this/debian/mesos.preinst"
                --after-install "$this/debian/mesos.postinst"
@@ -275,6 +274,10 @@ function deb_ {
                 )
   if [[ $start_with == "runit" ]];then
     opts+=( -d 'runit' )
+  fi
+
+  if [[ $(vercomp "$version" 0.20.1) == '>' ]]; then
+    opts+=( -d "libsvn1" )
   fi
 
   if [[ $(check_pkg 'libcurl4-nss-dev') -eq 1 ]];then
