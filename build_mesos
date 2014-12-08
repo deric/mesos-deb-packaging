@@ -212,8 +212,10 @@ function jars {
 function logrotate {
   case "$linux" in
     ubuntu/*|debian/*)
-      mkdir -p etc/logrotate.d
-      cp "$this"/debian/logrotate etc/logrotate.d/mesos
+      if [[ $start_with != "runit" ]];then
+        mkdir -p etc/logrotate.d
+        cp "$this"/debian/logrotate etc/logrotate.d/mesos
+      fi
     ;;
     centos/*|redhat/*)
       err "not implemented yet"
@@ -270,10 +272,11 @@ function deb_ {
                --config-files "/etc/default/mesos-master"
                --config-files "/etc/default/mesos-slave"
                --config-files "/etc/mesos/zk"
-               --config-files "/etc/logrotate.d/mesos"
                 )
   if [[ $start_with == "runit" ]];then
     opts+=( -d 'runit' )
+  else
+    opts+=( --config-files "/etc/logrotate.d/mesos" )
   fi
 
   if [[ $(vercomp "$version" 0.20.1) == '>' ]]; then
