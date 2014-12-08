@@ -231,7 +231,7 @@ function pkg {
 }
 
 function clean {
-  local build_dir="$(pwd -P)/build"
+  build_dir="$(pwd -P)/build"
   if [[ -d $build_dir ]]; then
     msg "removing build directory..."
     rm -rf $build_dir
@@ -343,16 +343,22 @@ and iterative jobs), and other applications."
 }
 
 function save_python_eggs {
-  for egg in ${repodir}/build/src/python/dist/*.egg; do
-    msg "python egg: ${egg}"
-    case "$linux" in
-      ubuntu/*|debian/*)
-        python_pkg_ "$egg" -t deb
-        ;;
-      *)                 err "Not sure how to package for: $linux" ;;
-    esac
-  done
-  cd $pwd
+  local python_dist="$repodir"/build/src/python/dist
+  if ls -d "$repodir"/build/src/python/native/dist/*.egg &>/dev/null
+  then
+    # Eggs were found in the old location, use that instead
+    python_dist="$repodir"/build/src/python/native/dist
+  fi
+  local eggs=( "$python_dist"/*.egg )
+  cp "${eggs[@]}" "$this"/
+  if [[ $(vercomp "$version" 0.20.0) == '<' ]]
+  then
+    # Old way to create the distribution egg
+    cat "${eggs[@]}" > "$this"/mesos.egg
+  else
+    # Distribute mesos.native (mesos.interface can be found on pypi)
+    cp "$this"/mesos.native*.egg "$this"/mesos.egg
+  fi
 }
 
 function python_pkg_ {
@@ -444,6 +450,46 @@ function num_cores {
     fi
   fi
   out "$cores"
+}
+
+# Compares version strings $1 with $2 and prints '=', '>', or '<'
+# Only works if compared strings have the same number of positions, for example:
+#   vercomp 0.19    0.2   # good
+#   vercomp 0.19.0  0.2.0 # good
+#   vercomp 0.19.0  0.2   # bad
+# Adapted from: http://stackoverflow.com/a/4025065/3389824
+function vercomp {
+  if [[ $1 == $2 ]]
+  then
+    out '='
+    return
+  fi
+  local IFS=.
+  local i ver1=($1) ver2=($2)
+  # fill empty fields in ver1 with zeros
+  for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+  do
+    ver1[i]=0
+  done
+  for ((i=0; i<${#ver1[@]}; i++))
+  do
+    if [[ -z ${ver2[i]} ]]
+    then
+      # fill empty fields in ver2 with zeros
+      ver2[i]=0
+    fi
+    if ((10#${ver1[i]} > 10#${ver2[i]}))
+    then
+      out '>'
+      return
+    fi
+    if ((10#${ver1[i]} < 10#${ver2[i]}))
+    then
+      out '<'
+      return
+    fi
+  done
+  out =
 }
 
 function msg { out "$*" >&2 ;}

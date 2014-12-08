@@ -50,11 +50,14 @@ or supply just `ref` to tag in the (default) repo:
   * Ruby (build scripts uses [FPM](https://github.com/jordansissel/fpm))
 
     ```
+    $ sudo apt-get install ruby1.9.1 ruby1.9.1-dev build-essential
     $ gem install fpm
     $ sudo apt-get install build-essential python-dev autoconf automake git make libssl-dev libcurl4-nss-dev libtool libsasl2-dev
     ```
   * Java support
     * e.g. `openjdk-7-jre-headless`, `openjdk-7-jdk` ,`maven`
+  * Python packages
+    * Debian: `python-setuptools`
 
   * Mesos >= 0.14
     * Debian: `libsasl2-dev`
