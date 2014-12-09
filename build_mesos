@@ -26,6 +26,7 @@ name=mesos
 version="${version:-9999}"
 use_sudo=false
 ref=""
+patch=""
 start_with="system"
 
 function main {
@@ -36,6 +37,7 @@ function main {
       --repo)                   repo="$2"       ; shift 2 ;;
       --version)                version="$2"    ; shift 2 ;;
       --start-with)             start_with="$2" ; shift 2 ;;
+      --patch)                  patch="$2"      ; shift 2 ;;
       --use-sudo)               use_sudo=true   ; shift 1 ;;
       *)                        err 'Argument error. Please see help.' ;;
     esac
@@ -194,8 +196,8 @@ function runit {
   mkdir -p etc/service
   mkdir -p srv/mesos-master
   mkdir -p srv/mesos-slave
-  cp -r "$this"/runit/master srv/mesos-master
-  cp -r "$this"/runit/slave srv/mesos-slave
+  cp -r "$this"/runit/master/* srv/mesos-master
+  cp -r "$this"/runit/slave/* srv/mesos-slave
 }
 
 function jars {
@@ -329,7 +331,7 @@ function osx_ {(
 )}
 
 function fpm_ {
-  local version="$(maybe_append_git_hash "$version")"
+  local version="$(maybe_append_git_hash "$version")${patch}"
   local opts=( -s dir
                -n "$name"
                -v "$version"
