@@ -6,5 +6,10 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin
 DAEMON=/usr/local/sbin/mesos-slave
 SLAVE_OPTS=$(/usr/bin/mesos-init-wrapper slave)
 
+[[ ! -f /etc/default/mesos-slave ]] || . /etc/default/mesos-slave
+[[ ! ${ULIMIT_OPEN_FILES:-} ]]    || ulimit -n $ULIMIT_OPEN_FILES
+[[ ! ${ULIMIT_MAX_PROCESSES:-} ]]    || ulimit -u $ULIMIT_MAX_PROCESSES
+[[ ! ${ULIMIT_PENDING_SIGNALS:-} ]]    || ulimit -i $ULIMIT_PENDING_SIGNALS
+
 exec $DAEMON ${SLAVE_OPTS} 2>&1
 
