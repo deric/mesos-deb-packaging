@@ -1,7 +1,5 @@
 #!/bin/bash
 
-exec 2>&1
-
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 DAEMON=/usr/local/sbin/mesos-slave
 SLAVE_OPTS=$(/usr/bin/mesos-init-wrapper slave)
@@ -11,5 +9,6 @@ SLAVE_OPTS=$(/usr/bin/mesos-init-wrapper slave)
 [[ ! ${ULIMIT_MAX_PROCESSES:-} ]]    || ulimit -u $ULIMIT_MAX_PROCESSES
 [[ ! ${ULIMIT_PENDING_SIGNALS:-} ]]    || ulimit -i $ULIMIT_PENDING_SIGNALS
 
-exec $DAEMON ${SLAVE_OPTS} 2>&1
+exec 2>&1 \
+   su - root -c "${DAEMON} ${SLAVE_OPTS}"
 

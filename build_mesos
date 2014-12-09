@@ -214,10 +214,8 @@ function jars {
 function logrotate {
   case "$linux" in
     ubuntu/*|debian/*)
-      if [[ $start_with != "runit" ]];then
-        mkdir -p etc/logrotate.d
-        cp "$this"/debian/logrotate etc/logrotate.d/mesos
-      fi
+      mkdir -p etc/logrotate.d
+      cp "$this"/debian/logrotate etc/logrotate.d/mesos
     ;;
     centos/*|redhat/*)
       err "not implemented yet"
