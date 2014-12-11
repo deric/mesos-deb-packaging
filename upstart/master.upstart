@@ -13,8 +13,5 @@ script
     [ -r /etc/default/mesos ] && . /etc/default/mesos
     DAEMON="/usr/local/sbin/mesos-master"
     MESOS_MASTER_OPTS=$(/usr/bin/mesos-init-wrapper master)
-    exec start-stop-daemon --start --make-pidfile --name mesos-master \
-        --pidfile /var/run/mesos-master.pid --startas /bin/bash -- -c "exec $DAEMON $MESOS_MASTER_OPTS"
-
+    exec ${DAEMON} ${MESOS_MASTER_OPTS}
 end script
-
