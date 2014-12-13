@@ -13,16 +13,12 @@ script
     [ -r /etc/default/mesos ] && . /etc/default/mesos
     DAEMON="/usr/local/sbin/mesos-slave"
     MESOS_SLAVE_OPTS=$(/usr/bin/mesos-init-wrapper slave)
-    PIDFILE=/var/run/mesos-slave.pid
 
-    [[ ! -f /etc/default/mesos-slave ]] || . /etc/default/mesos-slave
-    [[ ! ${ULIMIT_OPEN_FILES:-} ]]    || ulimit -n $ULIMIT_OPEN_FILES
-    [[ ! ${ULIMIT_MAX_PROCESSES:-} ]]    || ulimit -u $ULIMIT_MAX_PROCESSES
-    [[ ! ${ULIMIT_PENDING_SIGNALS:-} ]]    || ulimit -i $ULIMIT_PENDING_SIGNALS
+    [ ! -f /etc/default/mesos-slave ] || . /etc/default/mesos-slave
+    [ ! ${ULIMIT_OPEN_FILES:-} ]      || ulimit -n $ULIMIT_OPEN_FILES
+    [ ! ${ULIMIT_MAX_PROCESSES:-} ]   || ulimit -u $ULIMIT_MAX_PROCESSES
+    [ ! ${ULIMIT_PENDING_SIGNALS:-} ] || ulimit -i $ULIMIT_PENDING_SIGNALS
 
-    su -l -c "start-stop-daemon --start --background --quiet \
-                     --pidfile \"$PIDFILE\" --make-pidfile \
-                     --startas /bin/bash -- -c \"exec $DAEMON $SLAVE_OPTS\" "
-
+    exec ${DAEMON} ${MESOS_SLAVE_OPTS}
 end script
 
