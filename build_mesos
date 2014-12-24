@@ -385,6 +385,11 @@ function configure_opts {
   if [[ "$version" == 0.18.0-rc4 ]] || [[ "$repo" =~ 0\.18\.0-rc4$ ]]
   then options="--without-cxx11"                # See: MESOS-750 and MESOS-1095
   fi
+  if [[ $(vercomp "$version" 0.21.0) == '>' ]] ||
+     [[ $(vercomp "$version" 0.21.0) == '=' ]]
+  then options="--enable-optimize"
+  fi
+
   out "$options"
 }
 
