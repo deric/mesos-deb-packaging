@@ -4,5 +4,7 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin
 DAEMON=/usr/local/sbin/mesos-master
 MASTER_OPTS=$(/usr/bin/mesos-init-wrapper master)
 
-exec 2>&1 \
-    ${DAEMON} ${MASTER_OPTS}
+exec 2>&1
+
+exec ${DAEMON} ${MASTER_OPTS} >> /var/log/mesos/master.log 2>&1
+
