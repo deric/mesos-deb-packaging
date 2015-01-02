@@ -30,7 +30,6 @@ patch=""
 start_with="system"
 cxx=""
 cc=""
-flags=""
 
 function main {
   while [[ $# -gt 0 ]]
@@ -43,7 +42,6 @@ function main {
       --patch)                  patch="$2"      ; shift 2 ;;
       --cxx)                    cxx="$2"        ; shift 2 ;;
       --cc)                     cc="$2"         ; shift 2 ;;
-      --flags)                  flags="$2"      ; shift 2 ;;
       --use-sudo)               use_sudo=true   ; shift 1 ;;
       *)                        err 'Argument error. Please see help.' ;;
     esac
@@ -103,7 +101,7 @@ function build {(
     export CC="$cc"
   fi
 
-  ../configure $flags
+  ../configure $(configure_opts)
   # optimal number of build jobs is 2x num_cores
   make -j $(($(num_cores)*2))
 )}
@@ -469,6 +467,20 @@ function num_cores {
     fi
   fi
   out "$cores"
+}
+
+# Return Mesos configuration options
+function configure_opts {
+  local options=
+  if [[ "$version" == 0.18.0-rc4 ]] || [[ "$repo" =~ 0\.18\.0-rc4$ ]]
+  then options="--without-cxx11"                # See: MESOS-750 and MESOS-1095
+  fi
+  if [[ $(vercomp "$version" 0.21.0) == '>' ]] ||
+     [[ $(vercomp "$version" 0.21.0) == '=' ]]
+  then options="--enable-optimize"
+  fi
+
+  out "$options"
 }
 
 # Compares version strings $1 with $2 and prints '=', '>', or '<'
