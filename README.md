@@ -8,6 +8,14 @@ NOTE: if you build Mesos on system with e.g. `libcurl4-nss-dev` it will be hardl
   * `libcurl4-nss-dev`
   * `libcurl4-openssl-dev`
 
+## GCC compatibility
+
+| **Mesos version \ GCC** | gcc 4.4 | gcc 4.6 | gcc 4.7 | gcc 4.8 | gcc 4.9 |
+|------------------------:|:-------:|:-------:|:-------:|:-------:|:-------:|
+|  0.20                   |    ✔    |    ✔    |     ✔   |    ✔    |    ✔    |
+|  0.21                   |    ✔    |    ✔    |     ✖   |    ✔    |    ✔    |
+
+Mesos is compiled with C++11 support.
 
 ## Mesos configuration
 
