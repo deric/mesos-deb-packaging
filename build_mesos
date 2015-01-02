@@ -255,6 +255,11 @@ function clean {
       rm $package
     fi
   done
+  local num_eggs=`ls $this/*.egg -1 | wc -l`
+  if [[ $num_eggs -gt 0 ]];then
+    msg "removing old python egg"
+    rm -f "$this"/*.egg
+  fi
 }
 
 function architecture {
@@ -372,9 +377,6 @@ function save_python_eggs {
   then
     # Old way to create the distribution egg
     cat "${eggs[@]}" > "$this"/mesos.egg
-  else
-    # Distribute mesos.native (mesos.interface can be found on pypi)
-    cp "$this"/mesos.native*.egg "$this"/mesos.egg
   fi
 }
 
