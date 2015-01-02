@@ -194,10 +194,10 @@ function init_scripts {
 
 function runit {
   mkdir -p etc/service
-  mkdir -p srv/mesos-master
-  mkdir -p srv/mesos-slave
-  cp -r "$this"/runit/master/* srv/mesos-master
-  cp -r "$this"/runit/slave/* srv/mesos-slave
+  mkdir -p etc/sv/mesos-master
+  mkdir -p etc/sv/mesos-slave
+  cp -r "$this"/runit/master/* etc/sv/mesos-master
+  cp -r "$this"/runit/slave/* etc/sv/mesos-slave
 }
 
 function jars {
@@ -368,7 +368,7 @@ function save_python_eggs {
 }
 
 function python_pkg_ {
-  # Takes an egg and turns it into a deb. 
+  # Takes an egg and turns it into a deb.
   # Takes a egg filename as the first argument, and any extra fpm args after that.
   local egg_path=$1
   shift
