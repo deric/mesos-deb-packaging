@@ -51,6 +51,21 @@ or supply just `ref` to tag in the (default) repo:
 ./build_mesos --ref 0.21.0 --version 0.21.0
 ```
 
+### Debian Wheezy
+
+Default gcc on Wheezy is 4.7 which isn't compatible with Mesos >= 0.21. A workaround is using
+gcc 4.6 which could be used along with 4.7:
+
+```
+apt-get install gcc-4.6 g++-4.6
+```
+
+just specify `cxx` and `cc` flags:
+
+```
+./build_mesos --ref 0.21.1-rc2 --version 0.21.1 --cxx "g++-4.6" --cc "gcc-4.6"
+```
+
 ### Requirements
 
   * you'll definitely need ~2GB RAM for compilation
