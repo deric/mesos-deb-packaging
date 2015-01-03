@@ -288,6 +288,7 @@ function deb_ {
                --config-files "/etc/default/mesos-master"
                --config-files "/etc/default/mesos-slave"
                --config-files "/etc/mesos/zk"
+               --license "Apache 2.0"
                 )
   if [[ $start_with == "runit" ]];then
     opts+=( -d 'runit' )
