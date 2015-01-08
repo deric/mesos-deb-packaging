@@ -9,6 +9,8 @@ Restart=on-abort
 Restart=always
 RestartSec=20
 LimitNOFILE=16384
+CPUAccounting=true
+MemoryAccounting=true
 
 [Install]
 WantedBy=multi-user.target
