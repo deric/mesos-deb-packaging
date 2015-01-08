@@ -103,6 +103,7 @@ function go {
     build
   fi
   create_installation
+  create_lib_symlinks
   pkg
   save_python_egg
 }
@@ -224,6 +225,18 @@ function create_installation {(
   fi
   init_scripts "$linux"
   jars
+)}
+
+function create_lib_symlinks {(
+  cd toor
+  if [[ ! -d usr/local/lib ]]
+  then
+    msg "Create symlinks for backwards compatibility (e.g. Marathon currently"
+    msg "expects libmesos.so to exist in /usr/local/lib)."
+    mkdir -p usr/local/lib/python2.7/site-packages/mesos/native
+    ln -s usr/lib/lib*.so usr/local/lib/
+    ln -s usr/lib/python2.7/site-packages/mesos/native/*.so usr/local/lib/python2.7/site-packages/mesos/native/
+  fi
 )}
 
 function init_scripts {
