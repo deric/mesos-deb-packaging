@@ -233,9 +233,9 @@ function create_lib_symlinks {(
   then
     msg "Create symlinks for backwards compatibility (e.g. Marathon currently"
     msg "expects libmesos.so to exist in /usr/local/lib)."
-    mkdir -p usr/local/lib/python2.7/site-packages/mesos/native
-    ln -s usr/lib/lib*.so /usr/local/lib/
-    ln -s usr/lib/python2.7/site-packages/mesos/native/*.so /usr/local/lib/python2.7/site-packages/mesos/native/
+    mkdir -p usr/local/lib
+    # ensure symlinks are relative so they work as expected in the final env
+    ( cd usr/local/lib && cp -s ../../lib/lib*.so . )
   fi
 )}
 
