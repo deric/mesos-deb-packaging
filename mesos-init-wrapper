@@ -66,10 +66,11 @@ function slave {
   local resources=()
   [[ ! -f /etc/default/mesos ]]       || . /etc/default/mesos
   [[ ! -f /etc/default/mesos-slave ]] || . /etc/default/mesos-slave
-  [[ ! ${MASTER:-} ]]    || args+=( --master="$MASTER" )
-  [[ ! ${IP:-} ]]        || args+=( --ip="$IP" )
-  [[ ! ${LOGS:-} ]]      || args+=( --log_dir="$LOGS" )
-  [[ ! ${ISOLATION:-} ]] || args+=( --isolation="$ISOLATION" )
+  [[ ! ${MASTER:-} ]]         || args+=( --master="$MASTER" )
+  [[ ! ${IP:-} ]]             || args+=( --ip="$IP" )
+  [[ ! ${LOGS:-} ]]           || args+=( --log_dir="$LOGS" )
+  [[ ! ${ISOLATION:-} ]]      || args+=( --isolation="$ISOLATION" )
+  [[ ! ${CONTAINERIZERS:-} ]] || args+=( --containerizers="$CONTAINERIZERS" )
 
   for f in "$etc_slave"/* # attributes ip resources isolation &al.
   do
