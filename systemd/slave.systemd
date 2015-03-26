@@ -5,7 +5,7 @@ Wants=network.target
 
 [Service]
 ExecStart=/usr/bin/mesos-init-wrapper slave
-Restart=on-abort
+KillMode=process
 Restart=always
 RestartSec=20
 LimitNOFILE=16384
