@@ -63,6 +63,8 @@ function slave {
   local args=()
   local attributes=()
   local resources=()
+  # Call mesosphere-dnsconfig if present on the system to generate config files.
+  [ -x /usr/bin/mesosphere-dnsconfig ] && mesosphere-dnsconfig -write -service=mesos-slave
   [[ ! -f /etc/default/mesos ]]       || . /etc/default/mesos
   [[ ! -f /etc/default/mesos-slave ]] || . /etc/default/mesos-slave
   [[ ! ${ULIMIT:-} ]]    || ulimit $ULIMIT
@@ -105,6 +107,8 @@ function slave {
 function master {
   local etc_master=/etc/mesos-master
   local args=()
+  # Call mesosphere-dnsconfig if present on the system to generate config files.
+  [ -x /usr/bin/mesosphere-dnsconfig ] && mesosphere-dnsconfig -write -service=mesos-master
   [[ ! -f /etc/default/mesos ]]        || . /etc/default/mesos
   [[ ! -f /etc/default/mesos-master ]] || . /etc/default/mesos-master
   [[ ! ${ULIMIT:-} ]]  || ulimit $ULIMIT
