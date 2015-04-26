@@ -503,7 +503,7 @@ function url_split {
 
 function clean {
   build_dir="$(pwd -P)/build"
-  if [[ -d $build_dir ]]; then
+  if [[ ! $prebuilt && -d $build_dir ]]; then
     msg "removing build directory..."
     rm -rf $build_dir
   fi
