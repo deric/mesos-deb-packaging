@@ -5,20 +5,7 @@ description "mesos slave"
 # Ubuntu, Debian, CentOS, and RHEL distros. See:
 # http://upstart.ubuntu.com/cookbook/#standard-idioms
 start on stopped rc RUNLEVEL=[2345]
-
 respawn
-respawn limit 3 420
 
-script
-    [ -r /etc/default/mesos ] && . /etc/default/mesos
-    DAEMON="/usr/local/sbin/mesos-slave"
-    MESOS_SLAVE_OPTS=$(/usr/bin/mesos-init-wrapper slave)
-
-    [ ! -f /etc/default/mesos-slave ] || . /etc/default/mesos-slave
-    [ ! ${ULIMIT_OPEN_FILES:-} ]      || ulimit -n $ULIMIT_OPEN_FILES
-    [ ! ${ULIMIT_MAX_PROCESSES:-} ]   || ulimit -u $ULIMIT_MAX_PROCESSES
-    [ ! ${ULIMIT_PENDING_SIGNALS:-} ] || ulimit -i $ULIMIT_PENDING_SIGNALS
-
-    exec ${DAEMON} ${MESOS_SLAVE_OPTS}
-end script
+exec /usr/bin/mesos-init-wrapper slave
 

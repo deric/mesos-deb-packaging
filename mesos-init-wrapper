@@ -59,11 +59,12 @@ function main {
 }
 
 function slave {
-  local etc_slave="/etc/mesos-slave"
-  local slave_bin="/usr/local/sbin/mesos-slave"
+  local etc_slave=/etc/mesos-slave
   local args=()
   local attributes=()
   local resources=()
+  # Call mesosphere-dnsconfig if present on the system to generate config files.
+  [ -x /usr/bin/mesosphere-dnsconfig ] && mesosphere-dnsconfig -write -service=mesos-slave
   [[ ! -f /etc/default/mesos ]]       || . /etc/default/mesos
   [[ ! -f /etc/default/mesos-slave ]] || . /etc/default/mesos-slave
   [[ ! ${MASTER:-} ]]         || args+=( --master="$MASTER" )
@@ -71,6 +72,9 @@ function slave {
   [[ ! ${LOGS:-} ]]           || args+=( --log_dir="$LOGS" )
   [[ ! ${ISOLATION:-} ]]      || args+=( --isolation="$ISOLATION" )
   [[ ! ${CONTAINERIZERS:-} ]] || args+=( --containerizers="$CONTAINERIZERS" )
+  [[ ! ${ULIMIT_OPEN_FILES:-} ]]      || ulimit -n $ULIMIT_OPEN_FILES
+  [[ ! ${ULIMIT_MAX_PROCESSES:-} ]]   || ulimit -u $ULIMIT_MAX_PROCESSES
+  [[ ! ${ULIMIT_PENDING_SIGNALS:-} ]] || ulimit -i $ULIMIT_PENDING_SIGNALS
 
   for f in "$etc_slave"/* # attributes ip resources isolation &al.
   do
@@ -101,26 +105,25 @@ function slave {
     local formatted="$(printf ';%s' "${resources[@]}")"
     args+=( --resources="${formatted:1}" )         # NB: Leading ';' is clipped
   fi
-  if [ "$USE_SYSLOG" = true ] ; then
-    logged "${slave_bin} ${args[@]}"
-  else
-    # command for running slave
-    echo "${args[@]} >> ${LOG_DIR}/slave.log 2>&1"
-  fi
+  logged /usr/sbin/mesos-slave "${args[@]}"
 }
 
 function master {
   local etc_master=/etc/mesos-master
-  local master_bin="/usr/local/sbin/mesos-master"
   local args=()
+  # Call mesosphere-dnsconfig if present on the system to generate config files.
+  [ -x /usr/bin/mesosphere-dnsconfig ] && mesosphere-dnsconfig -write -service=mesos-master
   [[ ! -f /etc/default/mesos ]]        || . /etc/default/mesos
   [[ ! -f /etc/default/mesos-master ]] || . /etc/default/mesos-master
-  [[ ! ${ULIMIT:-} ]]   || ulimit $ULIMIT
-  [[ ! ${ZK:-} ]]       || args+=( --zk="$ZK" )
-  [[ ! ${PORT:-} ]]     || args+=( --port="$PORT" )
-  [[ ! ${IP:-} ]]       || args+=( --ip="$IP" )
-  [[ ! ${CLUSTER:-} ]]  || args+=( --cluster="$CLUSTER" )
-  [[ ! ${LOGS:-} ]]     || args+=( --log_dir="$LOGS" )
+  [[ ! ${ULIMIT:-} ]]  || ulimit $ULIMIT
+  [[ ! ${ZK:-} ]]      || args+=( --zk="$ZK" )
+  [[ ! ${IP:-} ]]      || args+=( --ip="$IP" )
+  [[ ! ${PORT:-} ]]    || args+=( --port="$PORT" )
+  [[ ! ${CLUSTER:-} ]] || args+=( --cluster="$CLUSTER" )
+  [[ ! ${LOGS:-} ]]    || args+=( --log_dir="$LOGS" )
+  [[ ! ${ULIMIT_OPEN_FILES:-} ]]      || ulimit -n $ULIMIT_OPEN_FILES
+  [[ ! ${ULIMIT_MAX_PROCESSES:-} ]]   || ulimit -u $ULIMIT_MAX_PROCESSES
+  [[ ! ${ULIMIT_PENDING_SIGNALS:-} ]] || ulimit -i $ULIMIT_PENDING_SIGNALS
 
   for f in "$etc_master"/* # cluster log_dir port &al.
   do
@@ -133,11 +136,7 @@ function master {
       fi
     fi
   done
-  if [ "$USE_SYSLOG" = true ] ; then
-    logged /usr/local/sbin/mesos-master "${args[@]}"
-  else
-    echo "${args[@]} >> ${LOG_DIR}/master.log 2>&1"
-  fi
+  logged /usr/sbin/mesos-master "${args[@]}"
 }
 
 # Send all output to syslog and tag with PID and executable basename.
