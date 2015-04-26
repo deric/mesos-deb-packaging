@@ -107,7 +107,7 @@ function go {
   create_installation
   create_lib_symlinks
   pkg
-  save_python_eggs
+  save_python_egg
 }
 
 function mesos_version {
