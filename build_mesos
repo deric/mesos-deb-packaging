@@ -4,7 +4,7 @@ export LC_ALL=C
 function -h {
 cat <<USAGE
  USAGE: build_mesos (--repo <git URL>)?
-                    (--nominal-version <version>)?
+                    (--ref <version>)?
                     (--build-version <debian_revision or rpm release>)?
 
   Performs a build in ./mesos-repo after checking out a recent copy of Mesos.
@@ -18,7 +18,7 @@ cat <<USAGE
 
   Nominal version is the Mesos major.minor.patch version and is autodetected
   from the repository checkout. The detected version can be overridden with
-  --nominal-version.
+  --ref.
 
   Build version is an additional version string used for package releases. For
   debian packages this is known as the 'debian revision' and for rpm packages
@@ -71,7 +71,7 @@ function main {
       --prebuilt)               prebuilt=true      ; shift 1 ;;
       --repo)                   repo="$2"          ; shift 2 ;;
       --branch)                 branch="$2"        ; shift 2 ;;
-      --nominal-version)        version="$2"       ; shift 2 ;;
+      --ref)                    ref="$2"           ; shift 2 ;;
       --build-version)          build_version="$2" ; shift 2 ;;
       *)                        err 'Argument error. Please see help.' ;;
     esac
@@ -139,18 +139,23 @@ function checkout {
   local url=( $(url_split "$repo") )
   local repository="${url[0]}"
   local query="${url[1]:-}"
-  if [[ ${url[2]:-} ]]
-  then err "Setting fragment (#) does nothing. Try query (?) instead."
+
+  if [[ -z "$ref" ]]; then
+    if [[ ${url[2]:-} ]]
+    then err "Setting fragment (#) does nothing. Try query (?) instead."
+    fi
+    case "$query" in
+      ref=*|h=*|branch=*|tag=*) local ref="${query#*=}" ;;
+      *)                        local ref="$query" ;;
+    esac
   fi
-  case "$query" in
-    ref=*|h=*|branch=*|tag=*) local ref="${query#*=}" ;;
-    *)                        local ref="$query" ;;
-  esac
-  if [[ -d "$src_dir" ]]
-  then msg "Found directory \`$src_dir'; skipping checkout."
-  else msg "Cloning: $repository at $ref" && git clone "$repository" "$src_dir"
+  if [[ -d mesos-repo ]]
+  then msg "Found directory \`mesos-repo'; skipping checkout."
+  else msg "Cloning: $repository at $ref" && git clone "$repository" mesos-repo
   fi
-  ( cd "$src_dir" && ( [[ ! ${ref:-} ]] || git fetch --tags && git checkout -f "$ref" ) && "$@" )
+  repodir="${this}/mesos-repo"
+  msg "git checkout -f $ref"
+  ( cd mesos-repo && ( [[ ! ${ref:-} ]] || git fetch --tags && git checkout -f "$ref" ) && "$@" )
 }
 
 function build {(
