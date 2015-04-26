@@ -52,6 +52,7 @@ function globals {
   repo=https://git-wip-us.apache.org/repos/asf/mesos.git
   use_git_version=false
   prebuilt=false
+  start_with="system"
 }; globals
 
 function as_absolute {
