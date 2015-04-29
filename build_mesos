@@ -52,6 +52,7 @@ function globals {
   repo=https://git-wip-us.apache.org/repos/asf/mesos.git
   use_git_version=false
   prebuilt=false
+  with_python=true
   start_with="system"
 }; globals
 
@@ -70,6 +71,7 @@ function main {
       --src-dir)                src_dir="$2"       ; shift 2 ;;
       --build-dir)              build_dir="$2"     ; shift 2 ;;
       --prebuilt)               prebuilt=true      ; shift 1 ;;
+      --without-python)         with_python=false  ; shift 1 ;;
       --repo)                   repo="$2"          ; shift 2 ;;
       --branch)                 branch="$2"        ; shift 2 ;;
       --ref)                    ref="$2"           ; shift 2 ;;
@@ -107,7 +109,9 @@ function go {
   create_installation
   create_lib_symlinks
   pkg
-  save_python_egg
+  if [[ $with_python ]];then
+    save_python_egg
+  fi
 }
 
 function mesos_version {
