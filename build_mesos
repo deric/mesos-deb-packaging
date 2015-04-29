@@ -288,19 +288,6 @@ function jars {
   fi
 }
 
-function logrotate {
-  case "$linux" in
-    ubuntu/*|debian/*)
-      mkdir -p etc/logrotate.d
-      cp "$this"/debian/logrotate etc/logrotate.d/mesos
-    ;;
-    centos/*|redhat/*)
-      err "not implemented yet"
-    ;;
-    *) err "Not sure how to configure logrotate for: $linux" ;;
-  esac
-}
-
 function pkg {
   case "$linux" in
     ubuntu/*|debian/*) deb_ ;;
@@ -337,8 +324,6 @@ function deb_ {
                 )
   if [[ $start_with == "runit" ]];then
     opts+=( -d 'runit' )
-  else
-    opts+=( --config-files "/etc/logrotate.d/mesos" )
   fi
 
   if [[ $(vercomp "$version" 0.20.1) == '>' ]]; then
@@ -368,7 +353,7 @@ function check_pkg {
     centos/*|redhat/*)
       err "not implemented yet"
     ;;
-    *) err "Not sure how to configure logrotate for: $linux" ;;
+    *) err "Not sure how to get installed packages for: $linux" ;;
   esac
   echo $ret
 }
