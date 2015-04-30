@@ -11,7 +11,7 @@ respawn limit 3 420
 
 script
     [ -r /etc/default/mesos ] && . /etc/default/mesos
-    DAEMON="/usr/local/sbin/mesos-master"
+    DAEMON="/usr/sbin/mesos-master"
     MESOS_MASTER_OPTS=$(/usr/bin/mesos-init-wrapper master)
     exec ${DAEMON} ${MESOS_MASTER_OPTS}
 end script
