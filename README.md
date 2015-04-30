@@ -14,6 +14,7 @@ NOTE: if you build Mesos on system with e.g. `libcurl4-nss-dev` it will be hardl
 |------------------------:|:-------:|:-------:|:-------:|:-------:|:-------:|
 |  0.20                   |    ✔    |    ✔    |     ✔   |    ✔    |    ✔    |
 |  0.21                   |    ✔    |    ✔    |     ✖   |    ✔    |    ✔    |
+|  0.22                   |    ✖    |    ✖    |     ✖   |    ✔    |    ✔    |
 
 Mesos is compiled with C++11 support.
 
