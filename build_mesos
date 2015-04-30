@@ -154,13 +154,13 @@ function checkout {
       *)                        local ref="$query" ;;
     esac
   fi
-  if [[ -d mesos-repo ]]
+  if [[ -d "$src_dir" ]]
   then msg "Found directory \`mesos-repo'; skipping checkout."
   else msg "Cloning: $repository at $ref" && git clone "$repository" mesos-repo
   fi
   repodir="${this}/mesos-repo"
   msg "git checkout -f $ref"
-  ( cd mesos-repo && ( [[ ! ${ref:-} ]] || git fetch --tags && git checkout -f "$ref" ) && "$@" )
+  ( cd $src_dir && ( [[ ! ${ref:-} ]] || git fetch --tags && git checkout -f "$ref" ) && "$@" )
 }
 
 function build {(
@@ -223,7 +223,9 @@ function display_version {
 function create_installation {(
   local pwd="$(pwd -P)"
   mkdir -p toor
-  ( cd "$build_dir" && make install DESTDIR="$pwd"/toor )
+  mkdir -p inst
+  local inst_dir="$pwd"/inst
+  ( cd "$build_dir" && make install DESTDIR=$inst_dir )
   cd toor
   mkdir -p usr/share/doc/mesos etc/default etc/mesos var/log/mesos
   mkdir -p etc/mesos-master etc/mesos-slave var/lib/mesos
@@ -238,17 +240,31 @@ function create_installation {(
   fi
   init_scripts "$linux"
   jars
+  mkdir -p usr/bin
+  mkdir -p usr/lib
+  mkdir -p usr/libexec/mesos/
+  mkdir -p usr/share
+  mkdir -p usr/sbin
+  cp $inst_dir/usr/bin/mesos* usr/bin
+  cp $inst_dir/usr/lib/*.la usr/lib
+  cp $inst_dir/usr/lib/libmesos-*.so usr/lib
+  cp $inst_dir/usr/libexec/mesos/mesos* usr/libexec/mesos
+  cp -r $inst_dir/usr/share usr/share
+  cp $inst_dir/usr/sbin/mesos-master usr/sbin
+  cp $inst_dir/usr/sbin/mesos-slave usr/sbin
 )}
 
 function create_lib_symlinks {(
-  cd toor
+  cd "$src_dir/toor"
   if [[ ! -d usr/local/lib ]]
   then
     msg "Create symlinks for backwards compatibility (e.g. Marathon currently"
     msg "expects libmesos.so to exist in /usr/local/lib)."
     mkdir -p usr/local/lib
+    cd usr/local/lib
+    ln -s libmesos-*.so libmesos.so
     # ensure symlinks are relative so they work as expected in the final env
-    ( cd usr/local/lib && cp -s ../../lib/lib*.so . )
+    ( cp -s ../../lib/lib*.so . )
   fi
 )}
 
@@ -496,7 +512,12 @@ function clean {
     msg "removing build directory..."
     rm -rf $build_dir
   fi
-  for package in "$this/pkg.deb" "$this/pkg.rpm" "$this/python-mesos.deb"; do
+  inst_dir="$(pwd -P)/inst"
+  if [[ ! $prebuilt && -d $inst_dir ]]; then
+    msg "removing inst directory..."
+    rm -rf $inst_dir
+  fi
+ for package in "$this/pkg.deb" "$this/pkg.rpm" "$this/python-mesos.deb"; do
     if [[ -f $package ]]; then
       msg "removing old package $package"
       rm $package
