@@ -239,7 +239,9 @@ function create_installation {(
     echo 1                       > etc/mesos-master/quorum
   fi
   init_scripts "$linux"
-  jars
+  if ! $prebuilt; then
+    jars
+  fi
   mkdir -p usr/bin
   mkdir -p usr/lib
   mkdir -p usr/libexec/mesos/
@@ -249,22 +251,22 @@ function create_installation {(
   cp $inst_dir/usr/lib/*.la usr/lib
   cp $inst_dir/usr/lib/libmesos-*.so usr/lib
   cp $inst_dir/usr/libexec/mesos/mesos* usr/libexec/mesos
-  cp -r $inst_dir/usr/share usr/share
+  cp -r $inst_dir/usr/share usr/
   cp $inst_dir/usr/sbin/mesos-master usr/sbin
   cp $inst_dir/usr/sbin/mesos-slave usr/sbin
 )}
 
 function create_lib_symlinks {(
   cd "$src_dir/toor"
+  # symlink current version to libmesos.so
+  ( cd usr/lib && ln -s "$(ls -1 libmesos-*.so)" "libmesos.so" )
   if [[ ! -d usr/local/lib ]]
   then
     msg "Create symlinks for backwards compatibility (e.g. Marathon currently"
     msg "expects libmesos.so to exist in /usr/local/lib)."
     mkdir -p usr/local/lib
-    cd usr/local/lib
-    ln -s libmesos-*.so libmesos.so
     # ensure symlinks are relative so they work as expected in the final env
-    ( cp -s ../../lib/lib*.so . )
+    ( cd usr/local/lib && cp -s ../../lib/lib*.so . )
   fi
 )}
 
