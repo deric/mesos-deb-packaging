@@ -67,6 +67,17 @@ just specify `cxx` and `cc` flags:
 ./build_mesos --ref 0.21.1-rc2 --version 0.21.1 --cxx "g++-4.6" --cc "gcc-4.6"
 ```
 
+### Compiled gcc from source
+
+See [gcc instructions](https://gcc.gnu.org/wiki/InstallingGCC).
+```
+export LD_LIBRARY_PATH="/root/gcc-4.8.4/lib64"
+export LD_RUN_PATH="/root/gcc-4.8.4/lib64"
+export PATH="/root/gcc-4.8.4/bin:$PATH"
+```
+
+
+
 ### Requirements
 
   * you'll definitely need ~2GB RAM for compilation
