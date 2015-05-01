@@ -259,7 +259,9 @@ function create_installation {(
 function create_lib_symlinks {(
   cd "$src_dir/toor"
   # symlink current version to libmesos.so
-  ( cd usr/lib && ln -s "$(ls -1 libmesos-*.so)" "libmesos.so" )
+  if [ ! -L usr/lib/libmesos.so ]; then
+    ( cd usr/lib && ln -s "$(ls -1 libmesos-*.so)" "libmesos.so" )
+  fi
   if [[ ! -d usr/local/lib ]]
   then
     msg "Create symlinks for backwards compatibility (e.g. Marathon currently"
