@@ -49,7 +49,7 @@ Build deb package for Debian/Ubuntu with following:
 
 or supply just `ref` to tag in the (default) repo:
 ```
-./build_mesos --ref 0.21.0 --version 0.21.0
+./build_mesos --ref 0.22.1 --version 0.22.1
 ```
 
 ### Debian Wheezy
@@ -84,10 +84,26 @@ export PATH="/root/gcc-4.8.4/bin:$PATH"
     * if fact due to `make -j $(($(num_cores)*2))` you need cca 2GB per core
   * Ruby (build scripts uses [FPM](https://github.com/jordansissel/fpm))
 
+
+#### Debian Jessie
+
+  * install following packages
+
+    ```
+    $ sudo apt-get install build-essential ruby2.1 ruby2.1-dev rubygems
+    $ gem install fpm
+    $ sudo apt-get install build-essential python-dev autoconf automake git make libssl-dev libtool libsasl2-dev
+    ```
+  * some version of `libcurl-dev` (provided by multiple packages)
+  * Mesos >= 0.21
+    * Debian: `libapr1-dev libsvn-dev`
+
+
+#### Debian Wheezy
     ```
     $ sudo apt-get install ruby1.9.1 ruby1.9.1-dev build-essential
     $ gem install fpm
-    $ sudo apt-get install build-essential python-dev autoconf automake git make libssl-dev libcurl4-nss-dev libtool libsasl2-dev
+    $ sudo apt-get install build-essential python-dev autoconf automake git make libssl-dev libtool libsasl2-dev
     ```
   * Java support
     * e.g. `openjdk-7-jre-headless`, `openjdk-7-jdk` ,`maven`
