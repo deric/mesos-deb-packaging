@@ -49,7 +49,7 @@ Build deb package for Debian/Ubuntu with following:
 
 or supply just `ref` to tag in the (default) repo:
 ```
-./build_mesos --ref 0.22.1 --version 0.22.1
+./build_mesos --ref 0.22.1 --build-version p1
 ```
 
 ### Debian Wheezy
@@ -64,7 +64,7 @@ apt-get install gcc-4.6 g++-4.6
 just specify `cxx` and `cc` flags:
 
 ```
-./build_mesos --ref 0.21.1-rc2 --version 0.21.1 --cxx "g++-4.6" --cc "gcc-4.6"
+./build_mesos --ref 0.21.1-rc2 --build-version 1 --cxx "g++-4.6" --cc "gcc-4.6"
 ```
 
 ### Compiled gcc from source

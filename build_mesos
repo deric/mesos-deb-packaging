@@ -5,7 +5,7 @@ function -h {
 cat <<USAGE
  USAGE: build_mesos (--repo <git URL>)?
                     (--ref <version>)?
-                    (--version <debian_revision or rpm release>)?
+                    (--build-version <debian_revision or rpm release>)?
 
   Performs a build in ./mesos-repo after checking out a recent copy of Mesos.
   The default is to checkout:
@@ -75,7 +75,7 @@ function main {
       --repo)                   repo="$2"          ; shift 2 ;;
       --branch)                 branch="$2"        ; shift 2 ;;
       --ref)                    ref="$2"           ; shift 2 ;;
-      --version)                build_version="$2" ; shift 2 ;;
+      --build-version)                build_version="$2" ; shift 2 ;;
       *)                        err 'Argument error. Please see help.' ;;
     esac
   done
