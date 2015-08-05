@@ -333,7 +333,6 @@ function deb_ {
   local opts=( -t deb
                -d 'java-runtime-headless'
                -d "libcurl3"
-               -d "libunwind7|libunwind8"
                --after-install "$this/$asset_dir/mesos.postinst"
                --after-remove "$this/$asset_dir/mesos.postrm"
                --config-files "/etc/default/mesos"
