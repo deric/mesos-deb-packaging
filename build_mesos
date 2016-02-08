@@ -145,7 +145,7 @@ function checkout {
   local repository="${url[0]}"
   local query="${url[1]:-}"
 
-  if [[ -z "$ref" ]]; then
+  if [[ -z "${ref:-}" ]]; then
     if [[ ${url[2]:-} ]]
     then err "Setting fragment (#) does nothing. Try query (?) instead."
     fi
