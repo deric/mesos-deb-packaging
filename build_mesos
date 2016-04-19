@@ -280,11 +280,11 @@ function init_scripts {
       mkdir -p etc/init.d
       cp -p "$this"/init/master.init etc/init.d/mesos-master
       cp -p "$this"/init/slave.init etc/init.d/mesos-slave ;;
-    ubuntu/*|redhat/6|redhat/6.*|centos/6|centos/6.*)
+    ubuntu/12.*|ubuntu/13.*|ubuntu/14.*|ubuntu/15.*|redhat/6|redhat/6.*|centos/6|centos/6.*)
       mkdir -p etc/init
       cp "$this"/upstart/master.upstart etc/init/mesos-master.conf
       cp "$this"/upstart/slave.upstart etc/init/mesos-slave.conf ;;
-    fedora/*|redhat/7|redhat/7.*|centos/7|centos/7.*)
+    fedora/*|redhat/7|redhat/7.*|centos/7|centos/7.*|ubuntu/16.*)
       mkdir -p usr/lib/systemd/system
       cp "$this"/systemd/master.systemd usr/lib/systemd/system/mesos-master.service
       cp "$this"/systemd/slave.systemd usr/lib/systemd/system/mesos-slave.service ;;
