@@ -52,6 +52,13 @@ or supply just `ref` to tag in the (default) repo:
 ./build_mesos --ref 0.22.1 --build-version p1
 ```
 
+If you want to activate GPU support (Mesos >= 0.29.0), 
+
+```
+./build_mesos --ref 0.29.0 --enable-gpu
+```
+
+
 ### Debian Wheezy
 
 Default gcc on Wheezy is 4.7 which isn't compatible with Mesos >= 0.21. A workaround is using
@@ -83,6 +90,7 @@ export PATH="/root/gcc-4.8.4/bin:$PATH"
   * you'll definitely need ~2GB RAM for compilation
     * if fact due to `make -j $(($(num_cores)*2))` you need cca 2GB per core
   * Ruby (build scripts uses [FPM](https://github.com/jordansissel/fpm))
+  * If using GPU, you must have followed the [nVidia Guide](http://c99.millennium.berkeley.edu/documentation/latest/gpu-support/) and installed requirements
 
 
 #### Debian Jessie
