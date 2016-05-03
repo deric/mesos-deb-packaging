@@ -565,7 +565,7 @@ function configure_opts {
   fi
 
   if ${enable_gpu} 
-  then  option+=" --enable-nvidia-gpu-support --with-nvml-include=/opt/nvidia-gdk/usr/include --with-nvml-lib=/opt/nvidia-gdk/usr/src/gdk/nvml/lib"
+  then  options+=" --enable-nvidia-gpu-support --with-nvml-include=/opt/nvidia-gdk/usr/include --with-nvml-lib='/opt/nvidia-gdk/usr/src/gdk/nvml/lib'"
   fi 
 
   out "$options"
