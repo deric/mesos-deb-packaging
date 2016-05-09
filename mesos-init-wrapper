@@ -95,7 +95,7 @@ function slave {
   if [[ ${#attributes[@]} -gt 0 ]]
   then
     local formatted="$(printf ';%s' "${attributes[@]}")"
-    args+=( --attributes="${formatted:1}" )        # NB: Leading ';' is clipped
+    args+=( --attributes="\"${formatted:1}\"" )        # NB: Leading ';' is clipped
   fi
   for f in "$etc_slave"/resources/*
   do [[ ! -s $f ]] || resources+=( "$(basename "$f")":"$(cat "$f")" )
@@ -103,7 +103,7 @@ function slave {
   if [[ ${#resources[@]} -gt 0 ]]
   then
     local formatted="$(printf ';%s' "${resources[@]}")"
-    args+=( --resources="${formatted:1}" )         # NB: Leading ';' is clipped
+    args+=( --resources="\"${formatted:1}\"" )         # NB: Leading ';' is clipped
   fi
   logged /usr/sbin/mesos-slave "${args[@]}"
 }
